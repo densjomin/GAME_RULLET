@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>18+ Рулетка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <style>
+    :root {
+      --bg: #050510;
+      --wheel-man: #4a90e2;
+      --wheel-woman: #ff69b4;
+      --wheel-mutual: #f59e0b;
+      --text: #f7f7f7;
+      --card: #151522;
+      --warning: #ff4444;
+      --success: #4ade80;
+      --accent: #a855f7;
+      --skip: #4b5563;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #221133 0, #050510 70%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      height: 100vh;
+      padding: 12px;
+      gap: 12px;
+    }
+
+    /* Карточка с заданием */
+    .result-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+      flex: 1; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .gif-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.2);
+      flex-direction: column;
+    }
+
+    .gif-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+
+    /* Панель управления */
+    .controls-wrapper {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    .level-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+    }
+
+    .level-title {
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+    }
+
+    .next-level-btn {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+      outline: none; 
+    }
+
+    .next-level-btn:active { transform: scale(0.95); }
+
+    /* Секция колеса и управления */
+    .wheel-section {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      padding: 12px;
+      border-radius: 20px;
+    }
+
+    /* Левая часть (счетчик, таймер, пропуск) */
+    .left-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+
+    .task-counter {
+      font-size: 14px;
+      font-weight: 600;
+      color: #aaa;
+    }
+    .task-counter span { color: #fff; font-size: 16px; }
+
+    /* ТАЙМЕР */
+    .timer-display {
+        font-family: monospace;
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        min-height: 29px;
+    }
+    .timer-display.alert { color: var(--warning); animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    /* КНОПКА ПРОПУСТИТЬ */
+    .skip-btn {
+        background: transparent;
+        border: 2px solid #555;
+        color: #888;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        width: 100%;
+        max-width: 140px;
+        outline: none;
+    }
+
+    .skip-btn:hover {
+        border-color: #777;
+        color: #fff;
+        background: rgba(255,255,255,0.05);
+    }
+    .skip-btn:active { transform: scale(0.95); }
+    
+    /* Когда кнопка отключена */
+    .skip-btn:disabled {
+        opacity: 0.3;
+        pointer-events: none;
+        border-color: #333;
+    }
+
+    /* Правая часть (Колесо) */
+    .wheel-wrapper-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .wheel-container {
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+      position: relative;
+    }
+
+    .wheel-container:active { transform: scale(0.95); }
+    .wheel-container.disabled { opacity: 0.4; pointer-events: none; }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 3px solid #333;
+      position: relative;
+      transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    .wheel.man { background: var(--wheel-man); box-shadow: 0 0 15px var(--wheel-man); }
+    .wheel.woman { background: var(--wheel-woman); box-shadow: 0 0 15px var(--wheel-woman); }
+    .wheel.mutual { background: var(--wheel-mutual); box-shadow: 0 0 15px var(--wheel-mutual); }
+
+    .gender-icon {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .gender-icon.mutual { font-size: 20px; white-space: pre; line-height: 1; }
+
+    .spin-hint {
+        color: #fff;
+        font-size: 10px;
+        opacity: 0.5;
+        text-align: center;
+    }
+
+    .message { color: #888; font-size: 16px; padding: 24px; text-align: center; }
+    .error { color: var(--warning); font-weight: 600; }
+    .loading { color: #aaa; }
+
+    /* --- АДАПТАЦИЯ ПОД ПК --- */
+    @media (min-width: 1024px) {
+      body { overflow: hidden; padding: 20px; }
+
+      .main-content {
+        max-width: 95vw;
+        margin: 0 auto;
+        height: 100vh;
+        gap: 30px;
+        justify-content: space-between;
+      }
+
+      .result-card {
+        flex-grow: 1; 
+        width: 100%;
+        background: #000; 
+        border: 1px solid #333;
+        box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        margin-bottom: 60px;
+      }
+
+      .controls-wrapper {
+        max-width: 800px;
+        background: var(--card);
+        padding: 20px 40px;
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        flex-direction: row; 
+        align-items: center;
+      }
+
+      .level-header { width: auto; flex: 1; }
+      
+      .wheel-section {
+        width: auto;
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+        gap: 40px;
+        flex: 1;
+        justify-content: flex-end;
+      }
+
+      .left-controls {
+          align-items: flex-end;
+          flex: none;
+      }
+
+      .wheel-container { width: 100px; height: 100px; }
+      .spin-hint { font-size: 12px; }
+      
+      .skip-btn { text-align: center; }
+    }
+
+    @media (max-width: 1023px) {
+        .spin-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-content">
+    <div class="result-card">
+      <div class="gif-wrapper" id="gifWrapper">
+        <div class="message loading">Загружаем задания...</div>
+      </div>
+    </div>
+
+    <div class="controls-wrapper">
+      <div class="level-header">
+        <div class="level-title" id="levelTitle">Прелюдия</div>
+        <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
+      </div>
+
+      <div class="wheel-section">
+        <div class="left-controls">
+            <div class="task-counter" id="taskCounter">
+                <div><span id="taskCount">0</span> / <span id="totalTasks">?</span></div>
+            </div>
+            
+            <div id="timerDisplay" class="timer-display">--:--</div>
+
+            <button class="skip-btn" id="skipBtn" disabled title="Enter">ПРОПУСТИТЬ</button>
+        </div>
+
+        <div class="wheel-wrapper-right">
+            <div class="spin-hint">Пробел - Крутить</div>
+            <div class="wheel-container" id="wheelContainer" title="Пробел">
+              <div id="wheel" class="wheel man">
+                <div class="gender-icon" id="genderIcon">🙎‍♂️</div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- НОВЫЕ УРОВНИ ---
+    const LEVELS = [
+      { name: 'Прелюдия в одежде', type: 'separate', files: ['1._Man_Prelude_v_odezde.json', '1.1_Woman_Prelude_v_odezde.json'] },
+      { name: 'Ласки руками в одежде', type: 'separate', files: ['2._Man_Fingering_v_odezde.json', '2.1_Woman_Masturbation_v_odezde.json'] },
+      { name: 'Оральные ласки в одежде', type: 'separate', files: ['3._Man_Cunnilingus_v_odezde.json', '3.1_Woman_Minet_v_odezde.json'] },
+      { name: 'Взаимно в одежде', type: 'mutual', file: '4._Vzaimno_v_odezde.json' },
+      { name: 'Раздевание', type: 'separate', files: ['5._Man_Razdevanie.json', '5.1_Woman_Razdevanie.json'] },
+      { name: 'Прелюдия без одежды', type: 'separate', files: ['6._Man_Prelude_bez_odezdy.json', '6.1_Woman_Prelude_bez_odezdy.json'] },
+      { name: 'Ласки руками без одежды', type: 'separate', files: ['7._Man_Fingering_bez_odezdy.json', '7.1_Woman_Masturbation_bez_odezdy.json'] },
+      { name: 'Оральные ласки без одежды', type: 'separate', files: ['8._Man_Cunnilingus_bez_odezdy.json', '8.1_Woman_Minet_bez_odezdy.json'] },
+      { name: 'Взаимно без одежды', type: 'mutual', file: '9._Vzaimno_bez_odezdy.json' },
+      { name: 'Секс', type: 'separate', files: ['10._Man_Sex.json', '10.1_Womam_Sex.json'] },
+      { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true } // Добавлен флаг noTimer
+    ];
+
+    let currentLevelIndex = 0;
+    let currentLevel = LEVELS[0];
+    let tasksData = {};
+    let usedTasks = [];
+    let totalTasks = 0;
+    
+    let isSpinning = false;
+    let rotationAngle = 0;
+    let isDataLoaded = false;
+    let currentGenderIndex = 0; // 0 = man, 1 = woman
+    let currentTask = null; // Текущее активное задание
+
+    // Переменные таймера
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    // Звуковой контекст
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const elements = {
+      levelTitle: document.getElementById('levelTitle'),
+      nextLevelBtn: document.getElementById('nextLevelBtn'),
+      taskCount: document.getElementById('taskCount'),
+      totalTasks: document.getElementById('totalTasks'),
+      wheelContainer: document.getElementById('wheelContainer'),
+      wheel: document.getElementById('wheel'),
+      genderIcon: document.getElementById('genderIcon'),
+      gifWrapper: document.getElementById('gifWrapper'),
+      skipBtn: document.getElementById('skipBtn'),
+      timerDisplay: document.getElementById('timerDisplay')
+    };
+
+    // --- ФУНКЦИЯ ДЛЯ ВКЛЮЧЕНИЯ АУДИО (ВАЖНО) ---
+    function unlockAudio() {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    // --- ФУНКЦИИ ЗВУКА ---
+    function playBeep() {
+        if (!audioCtx) return;
+
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        // Используем 'triangle' - он более резкий и слышный на телефоне
+        oscillator.type = 'triangle'; 
+        
+        // Настройка частоты (звук как у будильника)
+        oscillator.frequency.setValueAtTime(500, audioCtx.currentTime); 
+        oscillator.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+        oscillator.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.3);
+        
+        // Настройка громкости
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.05); // Громче
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.8);
+    }
+
+    // --- ФУНКЦИИ ТАЙМЕРА ---
+    function stopTimer() {
+        clearInterval(timerInterval);
+        elements.timerDisplay.textContent = '--:--';
+        elements.timerDisplay.className = 'timer-display';
+        isTimerRunning = false;
+    }
+
+    function startTimer() {
+        // Если это уровень Оргазм (у которого есть флаг noTimer), таймер не запускаем
+        if (currentLevel.noTimer) {
+            elements.timerDisplay.textContent = '';
+            return;
+        }
+
+        stopTimer();
+        
+        // Рандом от 60 до 90 секунд (1 - 1.5 минуты)
+        let duration = Math.floor(Math.random() * (90 - 60 + 1)) + 60;
+        
+        updateTimerVisual(duration);
+
+        timerInterval = setInterval(() => {
+            duration--;
+            updateTimerVisual(duration);
+            
+            if (duration <= 0) {
+                clearInterval(timerInterval);
+                elements.timerDisplay.textContent = 'ВРЕМЯ!';
+                elements.timerDisplay.classList.add('alert');
+                
+                // Проигрываем звук дважды для надежности
+                playBeep();
+                setTimeout(playBeep, 800);
+            }
+        }, 1000);
+    }
+
+    function updateTimerVisual(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        elements.timerDisplay.textContent = `${m}:${s}`;
+    }
+
+    // --- ЛОГИКА ИГРЫ ---
+    async function loadCurrentLevel() {
+      stopTimer();
+      elements.skipBtn.disabled = true;
+      elements.gifWrapper.innerHTML = '<div class="message loading">Загрузка уровня...</div>';
+      
+      try {
+        if (currentLevel.type === 'mutual') {
+          const response = await fetch(currentLevel.file);
+          if (!response.ok) throw new Error(`${currentLevel.file} не найден`);
+          tasksData = await response.json();
+          usedTasks = [];
+          totalTasks = tasksData.length;
+          elements.genderIcon.textContent = '🙎‍♂️\n🙎‍♀️';
+          elements.genderIcon.className = 'gender-icon mutual';
+          elements.wheel.className = 'wheel mutual';
+        } else {
+          const [manData, womanData] = await Promise.all([
+            fetch(currentLevel.files[0]).then(r => r.json()),
+            fetch(currentLevel.files[1]).then(r => r.json())
+          ]);
+          tasksData = { man: manData, woman: womanData };
+          usedTasks = [];
+          totalTasks = manData.length + womanData.length;
+          
+          currentGenderIndex = 0;
+          elements.genderIcon.textContent = '🙎‍♂️';
+          elements.genderIcon.className = 'gender-icon';
+          elements.wheel.className = 'wheel man';
+        }
+        
+        updateCounter();
+        checkGameStatus();
+        return true;
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка: ${error.message}</div>`;
+        return false;
+      }
+    }
+
+    function nextLevel() {
+      if (currentLevelIndex < LEVELS.length - 1) {
+        currentLevelIndex++;
+        currentLevel = LEVELS[currentLevelIndex];
+        loadCurrentLevel();
+        unlockAudio(); // Также пытаемся разблокировать звук при смене уровня
+      } else {
+        stopTimer();
+        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉</div>`;
+      }
+    }
+
+    function updateCounter() {
+      elements.taskCount.textContent = usedTasks.length;
+      elements.totalTasks.textContent = totalTasks;
+      elements.levelTitle.textContent = currentLevel.name;
+    }
+
+    function getRandomUnusedTask() {
+      let availableTasks = [];
+      if (currentLevel.type === 'mutual') {
+        availableTasks = tasksData.filter(task => !usedTasks.includes(task));
+      } else {
+        const gender = currentGenderIndex === 0 ? 'man' : 'woman';
+        availableTasks = tasksData[gender].filter(task => !usedTasks.includes(task));
+      }
+      
+      if (availableTasks.length === 0) return null;
+      
+      const randomIndex = Math.floor(Math.random() * availableTasks.length);
+      const selectedTask = availableTasks[randomIndex];
+      
+      // Добавляем в использованные
+      usedTasks.push(selectedTask);
+      currentTask = selectedTask;
+      
+      // Переключаем пол ДЛЯ СЛЕДУЮЩЕГО ХОДА
+      if (currentLevel.type !== 'mutual') {
+        currentGenderIndex = (currentGenderIndex + 1) % 2;
+      }
+      
+      updateCounter();
+      return selectedTask;
+    }
+
+    // --- ЛОГИКА ПРОПУСКА ---
+    function skipTask() {
+        if (isSpinning || elements.skipBtn.disabled) return;
+
+        stopTimer(); // Сброс таймера
+
+        usedTasks.pop();
+        currentTask = null;
+
+        if (currentLevel.type !== 'mutual') {
+            currentGenderIndex = (currentGenderIndex + 1) % 2; 
+            
+            const isMan = currentGenderIndex === 0;
+            elements.genderIcon.textContent = isMan ? '🙎‍♂️' : '🙎‍♀️';
+            elements.wheel.className = isMan ? 'wheel man' : 'wheel woman';
+        }
+
+        updateCounter();
+
+        elements.skipBtn.disabled = true;
+        elements.gifWrapper.innerHTML = `
+            <div class="message">
+                🚫 Задание пропущено.<br>
+                Крути снова!
+            </div>
+        `;
+    }
+
+    function checkGameStatus() {
+      if (!hasAvailableTasks()) {
+        elements.wheelContainer.classList.add('disabled');
+        elements.gifWrapper.innerHTML = `
+          <div class="message">
+            ✅ Уровень пройден!<br>
+            <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
+              Следующий уровень (→)
+            </button>
+          </div>
+        `;
+        return false;
+      }
+      elements.wheelContainer.classList.remove('disabled');
+      return true;
+    }
+
+    function hasAvailableTasks() { return usedTasks.length < totalTasks; }
+
+    function showGif(taskUrl) {
+      elements.gifWrapper.innerHTML = '<div class="message loading">...</div>';
+      const img = new Image();
+      img.onload = () => {
+        elements.gifWrapper.innerHTML = '';
+        elements.gifWrapper.appendChild(img);
+        checkGameStatus();
+        
+        elements.skipBtn.disabled = false;
+        startTimer();
+      };
+      img.onerror = () => {
+        elements.gifWrapper.innerHTML = '<div class="error message">Ошибка картинки</div>';
+        elements.skipBtn.disabled = true;
+      };
+      img.src = taskUrl;
+    }
+
+    function spinWheel() {
+      if (isSpinning || elements.wheelContainer.classList.contains('disabled') || !isDataLoaded) return;
+      
+      // >>> КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Разблокируем звук в момент клика <<<
+      unlockAudio();
+      
+      stopTimer(); 
+      elements.skipBtn.disabled = true; 
+      isSpinning = true;
+      
+      const spinAmount = 1800 + Math.random() * 720;
+      rotationAngle += spinAmount;
+      elements.wheel.style.transform = `rotate(${rotationAngle}deg)`;
+
+      setTimeout(() => {
+        isSpinning = false;
+        
+        const taskUrl = getRandomUnusedTask();
+        
+        if (currentLevel.type !== 'mutual') {
+          const isNextMan = currentGenderIndex === 0;
+          elements.genderIcon.textContent = isNextMan ? '🙎‍♂️' : '🙎‍♀️';
+          elements.wheel.className = isNextMan ? 'wheel man' : 'wheel woman';
+        }
+        
+        if (taskUrl) showGif(taskUrl);
+        else checkGameStatus();
+        
+      }, 2000);
+    }
+
+    async function initGame() {
+      isDataLoaded = await loadCurrentLevel();
+    }
+
+    // --- EVENT LISTENERS ---
+
+    elements.wheelContainer.onclick = spinWheel;
+    elements.wheelContainer.ontouchstart = (e) => { e.preventDefault(); spinWheel(); };
+    elements.nextLevelBtn.onclick = nextLevel;
+    
+    // Клик по кнопке Пропустить
+    elements.skipBtn.onclick = skipTask;
+
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space') {
+            event.preventDefault(); 
+            spinWheel();
+        }
+        if (event.code === 'ArrowRight') {
+            nextLevel();
+        }
+        // Enter для пропуска
+        if (event.code === 'Enter') {
+            event.preventDefault();
+            skipTask();
+        }
+    });
+
+    initGame();
+  </script>
+</body>
+</html>
