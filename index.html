@@ -369,7 +369,7 @@
       { name: 'Оральные ласки без одежды', type: 'separate', files: ['8._Man_Cunnilingus_bez_odezdy.json', '8.1_Woman_Minet_bez_odezdy.json'] },
       { name: 'Взаимно без одежды', type: 'mutual', file: '9._Vzaimno_bez_odezdy.json' },
     //{ name: 'Секс', type: 'separate', files: ['10._Man_Sex.json', '10.1_Womam_Sex.json'] },
-      { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true } // Добавлен флаг noTimer
+      { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true }
     ];
 
     let currentLevelIndex = 0;
@@ -538,6 +538,13 @@
       elements.taskCount.textContent = usedTasks.length;
       elements.totalTasks.textContent = totalTasks;
       elements.levelTitle.textContent = currentLevel.name;
+      
+      // >>> ИЗМЕНЕНИЕ: Меняем текст кнопки в шапке, если это последний уровень <<<
+      if (currentLevelIndex === LEVELS.length - 1) {
+        elements.nextLevelBtn.textContent = 'Закончить игру';
+      } else {
+        elements.nextLevelBtn.textContent = 'Дальше (→)';
+      }
     }
 
     function getRandomUnusedTask() {
@@ -598,11 +605,15 @@
     function checkGameStatus() {
       if (!hasAvailableTasks()) {
         elements.wheelContainer.classList.add('disabled');
+        
+        // >>> ИЗМЕНЕНИЕ: Текст кнопки по центру экрана при завершении уровня <<<
+        const nextBtnText = currentLevelIndex === LEVELS.length - 1 ? 'Закончить игру' : 'Следующий уровень (→)';
+        
         elements.gifWrapper.innerHTML = `
           <div class="message">
             ✅ Уровень пройден!<br>
             <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
-              Следующий уровень (→)
+              ${nextBtnText}
             </button>
           </div>
         `;
