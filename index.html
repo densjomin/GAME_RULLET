@@ -37,6 +37,77 @@
       -webkit-user-select: none;
     }
 
+    /* --- СТАРТОВЫЙ ЭКРАН --- */
+    .start-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, rgba(34, 17, 51, 0.9) 0, rgba(5, 5, 16, 0.95) 100%);
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .start-content {
+      background: rgba(21, 21, 34, 0.8);
+      padding: 40px 30px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.2);
+      max-width: 400px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .game-title {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--wheel-woman), var(--accent), var(--wheel-man));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .game-description {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .start-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: 100%;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+      background: #b566ff;
+    }
+
+    .start-btn:active {
+      transform: translateY(1px);
+    }
+    /* ---------------------- */
+
     .main-content {
       display: flex;
       flex-direction: column;
@@ -198,7 +269,6 @@
     }
     .skip-btn:active { transform: scale(0.95); }
     
-    /* Когда кнопка отключена */
     .skip-btn:disabled {
         opacity: 0.3;
         pointer-events: none;
@@ -320,7 +390,19 @@
 </head>
 <body>
 
-  <div class="main-content">
+  <!-- ЗАГЛАВНЫЙ ЭКРАН -->
+  <div id="startScreen" class="start-screen">
+    <div class="start-content">
+      <h1 class="game-title">СЕКС РУЛЕТКА</h1>
+      <p class="game-description">
+        Горячая игра для пар. Крутите колесо, выполняйте задания по очереди или вместе и переходите на новые уровни удовольствия.
+      </p>
+      <button id="startGameBtn" class="start-btn">Начать игру</button>
+    </div>
+  </div>
+
+  <!-- ОСНОВНАЯ ИГРА (Скрыта по умолчанию) -->
+  <div id="gameScreen" class="main-content" style="display: none;">
     <div class="result-card">
       <div class="gif-wrapper" id="gifWrapper">
         <div class="message loading">Загружаем задания...</div>
@@ -357,6 +439,14 @@
   </div>
 
   <script>
+    // Флаг старта игры
+    let isGameStarted = false;
+
+    // Элементы переключения экранов
+    const startScreen = document.getElementById('startScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const startGameBtn = document.getElementById('startGameBtn');
+
     // --- НОВЫЕ УРОВНИ ---
     const LEVELS = [
       { name: 'Прелюдия в одежде', type: 'separate', files: ['1._Man_Prelude_v_odezde.json', '1.1_Woman_Prelude_v_odezde.json'] },
@@ -368,7 +458,6 @@
       { name: 'Ласки руками без одежды', type: 'separate', files: ['7._Man_Fingering_bez_odezdy.json', '7.1_Woman_Masturbation_bez_odezdy.json'] },
       { name: 'Оральные ласки без одежды', type: 'separate', files: ['8._Man_Cunnilingus_bez_odezdy.json', '8.1_Woman_Minet_bez_odezdy.json'] },
       { name: 'Взаимно без одежды', type: 'mutual', file: '9._Vzaimno_bez_odezdy.json' },
-    //{ name: 'Секс', type: 'separate', files: ['10._Man_Sex.json', '10.1_Womam_Sex.json'] },
       { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true }
     ];
 
@@ -381,14 +470,12 @@
     let isSpinning = false;
     let rotationAngle = 0;
     let isDataLoaded = false;
-    let currentGenderIndex = 0; // 0 = man, 1 = woman
-    let currentTask = null; // Текущее активное задание
+    let currentGenderIndex = 0; 
+    let currentTask = null; 
 
-    // Переменные таймера
     let timerInterval = null;
     let isTimerRunning = false;
 
-    // Звуковой контекст
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     const elements = {
@@ -404,14 +491,20 @@
       timerDisplay: document.getElementById('timerDisplay')
     };
 
-    // --- ФУНКЦИЯ ДЛЯ ВКЛЮЧЕНИЯ АУДИО (ВАЖНО) ---
+    // --- КЛИК «НАЧАТЬ ИГРУ» ---
+    startGameBtn.addEventListener('click', () => {
+      startScreen.style.display = 'none';
+      gameScreen.style.display = ''; // Убираем скрытие, включится flex из CSS
+      isGameStarted = true;
+      unlockAudio(); // Надежно разблокируем аудиоконтекст
+    });
+
     function unlockAudio() {
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
     }
 
-    // --- ФУНКЦИИ ЗВУКА ---
     function playBeep() {
         if (!audioCtx) return;
 
@@ -421,24 +514,20 @@
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         
-        // Используем 'triangle' - он более резкий и слышный на телефоне
         oscillator.type = 'triangle'; 
         
-        // Настройка частоты (звук как у будильника)
         oscillator.frequency.setValueAtTime(500, audioCtx.currentTime); 
         oscillator.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.1);
         oscillator.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.3);
         
-        // Настройка громкости
         gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.05); // Громче
+        gainNode.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.05); 
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
 
         oscillator.start(audioCtx.currentTime);
         oscillator.stop(audioCtx.currentTime + 0.8);
     }
 
-    // --- ФУНКЦИИ ТАЙМЕРА ---
     function stopTimer() {
         clearInterval(timerInterval);
         elements.timerDisplay.textContent = '--:--';
@@ -447,7 +536,6 @@
     }
 
     function startTimer() {
-        // Если это уровень Оргазм (у которого есть флаг noTimer), таймер не запускаем
         if (currentLevel.noTimer) {
             elements.timerDisplay.textContent = '';
             return;
@@ -455,7 +543,6 @@
 
         stopTimer();
         
-        // Рандом от 60 до 90 секунд (1 - 1.5 минуты)
         let duration = Math.floor(Math.random() * (90 - 60 + 1)) + 60;
         
         updateTimerVisual(duration);
@@ -469,7 +556,6 @@
                 elements.timerDisplay.textContent = 'ВРЕМЯ!';
                 elements.timerDisplay.classList.add('alert');
                 
-                // Проигрываем звук дважды для надежности
                 playBeep();
                 setTimeout(playBeep, 800);
             }
@@ -482,7 +568,6 @@
         elements.timerDisplay.textContent = `${m}:${s}`;
     }
 
-    // --- ЛОГИКА ИГРЫ ---
     async function loadCurrentLevel() {
       stopTimer();
       elements.skipBtn.disabled = true;
@@ -523,11 +608,12 @@
     }
 
     function nextLevel() {
+      if (!isGameStarted) return;
       if (currentLevelIndex < LEVELS.length - 1) {
         currentLevelIndex++;
         currentLevel = LEVELS[currentLevelIndex];
         loadCurrentLevel();
-        unlockAudio(); // Также пытаемся разблокировать звук при смене уровня
+        unlockAudio(); 
       } else {
         stopTimer();
         elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉</div>`;
@@ -539,7 +625,6 @@
       elements.totalTasks.textContent = totalTasks;
       elements.levelTitle.textContent = currentLevel.name;
       
-      // >>> ИЗМЕНЕНИЕ: Меняем текст кнопки в шапке, если это последний уровень <<<
       if (currentLevelIndex === LEVELS.length - 1) {
         elements.nextLevelBtn.textContent = 'Закончить игру';
       } else {
@@ -561,11 +646,9 @@
       const randomIndex = Math.floor(Math.random() * availableTasks.length);
       const selectedTask = availableTasks[randomIndex];
       
-      // Добавляем в использованные
       usedTasks.push(selectedTask);
       currentTask = selectedTask;
       
-      // Переключаем пол ДЛЯ СЛЕДУЮЩЕГО ХОДА
       if (currentLevel.type !== 'mutual') {
         currentGenderIndex = (currentGenderIndex + 1) % 2;
       }
@@ -574,11 +657,10 @@
       return selectedTask;
     }
 
-    // --- ЛОГИКА ПРОПУСКА ---
     function skipTask() {
-        if (isSpinning || elements.skipBtn.disabled) return;
+        if (!isGameStarted || isSpinning || elements.skipBtn.disabled) return;
 
-        stopTimer(); // Сброс таймера
+        stopTimer(); 
 
         usedTasks.pop();
         currentTask = null;
@@ -606,7 +688,6 @@
       if (!hasAvailableTasks()) {
         elements.wheelContainer.classList.add('disabled');
         
-        // >>> ИЗМЕНЕНИЕ: Текст кнопки по центру экрана при завершении уровня <<<
         const nextBtnText = currentLevelIndex === LEVELS.length - 1 ? 'Закончить игру' : 'Следующий уровень (→)';
         
         elements.gifWrapper.innerHTML = `
@@ -644,9 +725,8 @@
     }
 
     function spinWheel() {
-      if (isSpinning || elements.wheelContainer.classList.contains('disabled') || !isDataLoaded) return;
+      if (!isGameStarted || isSpinning || elements.wheelContainer.classList.contains('disabled') || !isDataLoaded) return;
       
-      // >>> КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Разблокируем звук в момент клика <<<
       unlockAudio();
       
       stopTimer(); 
@@ -675,19 +755,18 @@
     }
 
     async function initGame() {
+      // Файлы начнут грузиться в фоне, пока пользователь читает стартовый экран
       isDataLoaded = await loadCurrentLevel();
     }
-
-    // --- EVENT LISTENERS ---
 
     elements.wheelContainer.onclick = spinWheel;
     elements.wheelContainer.ontouchstart = (e) => { e.preventDefault(); spinWheel(); };
     elements.nextLevelBtn.onclick = nextLevel;
-    
-    // Клик по кнопке Пропустить
     elements.skipBtn.onclick = skipTask;
 
     document.addEventListener('keydown', (event) => {
+        if (!isGameStarted) return; // Блокируем клавиши до старта игры
+
         if (event.code === 'Space') {
             event.preventDefault(); 
             spinWheel();
@@ -695,7 +774,6 @@
         if (event.code === 'ArrowRight') {
             nextLevel();
         }
-        // Enter для пропуска
         if (event.code === 'Enter') {
             event.preventDefault();
             skipTask();
