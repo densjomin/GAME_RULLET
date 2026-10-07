@@ -61,6 +61,7 @@
       max-width: 400px;
       text-align: center;
       backdrop-filter: blur(10px);
+      width: 100%;
     }
 
     .game-title {
@@ -81,13 +82,20 @@
       line-height: 1.5;
     }
 
+    .mode-selection {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
     .start-btn {
       background: var(--accent);
       color: white;
       border: none;
       padding: 16px 32px;
       border-radius: 16px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -106,6 +114,17 @@
     .start-btn:active {
       transform: translateY(1px);
     }
+
+    .random-btn {
+      background: var(--wheel-mutual);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .random-btn:hover {
+      background: #ffa726;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    }
+
     /* ---------------------- */
 
     .main-content {
@@ -118,7 +137,6 @@
       gap: 12px;
     }
 
-    /* Карточка с заданием */
     .result-card {
       background: var(--card);
       border-radius: 20px;
@@ -152,7 +170,6 @@
       border-radius: 20px;
     }
 
-    /* Панель управления */
     .controls-wrapper {
       width: 100%;
       max-width: 500px;
@@ -199,7 +216,6 @@
 
     .next-level-btn:active { transform: scale(0.95); }
 
-    /* Секция колеса и управления */
     .wheel-section {
       display: flex;
       align-items: flex-end;
@@ -211,7 +227,6 @@
       border-radius: 20px;
     }
 
-    /* Левая часть (счетчик, таймер, пропуск) */
     .left-controls {
         display: flex;
         flex-direction: column;
@@ -228,7 +243,6 @@
     }
     .task-counter span { color: #fff; font-size: 16px; }
 
-    /* ТАЙМЕР */
     .timer-display {
         font-family: monospace;
         font-size: 24px;
@@ -245,7 +259,6 @@
         100% { opacity: 1; }
     }
 
-    /* КНОПКА ПРОПУСТИТЬ */
     .skip-btn {
         background: transparent;
         border: 2px solid #555;
@@ -275,7 +288,6 @@
         border-color: #333;
     }
 
-    /* Правая часть (Колесо) */
     .wheel-wrapper-right {
         display: flex;
         flex-direction: column;
@@ -324,11 +336,10 @@
         text-align: center;
     }
 
-    .message { color: #888; font-size: 16px; padding: 24px; text-align: center; }
+    .message { color: #888; font-size: 16px; padding: 24px; text-align: center; line-height: 1.5; }
     .error { color: var(--warning); font-weight: 600; }
     .loading { color: #aaa; }
 
-    /* --- АДАПТАЦИЯ ПОД ПК --- */
     @media (min-width: 1024px) {
       body { overflow: hidden; padding: 20px; }
 
@@ -379,7 +390,6 @@
 
       .wheel-container { width: 100px; height: 100px; }
       .spin-hint { font-size: 12px; }
-      
       .skip-btn { text-align: center; }
     }
 
@@ -395,9 +405,13 @@
     <div class="start-content">
       <h1 class="game-title">СЕКС РУЛЕТКА</h1>
       <p class="game-description">
-        Горячая игра для пар. Крутите колесо, выполняйте задания по очереди или вместе и переходите на новые уровни удовольствия.
+        Горячая игра для пар. Выберите режим, крутите колесо и переходите на новые уровни удовольствия.
       </p>
-      <button id="startGameBtn" class="start-btn">Начать игру</button>
+      
+      <div class="mode-selection">
+        <button id="classicModeBtn" class="start-btn">Классическая игра</button>
+        <button id="randomModeBtn" class="start-btn random-btn">Случайные задания</button>
+      </div>
     </div>
   </div>
 
@@ -405,13 +419,13 @@
   <div id="gameScreen" class="main-content" style="display: none;">
     <div class="result-card">
       <div class="gif-wrapper" id="gifWrapper">
-        <div class="message loading">Крути колесо...</div>
+        <div class="message loading">Загружаем задания...</div>
       </div>
     </div>
 
     <div class="controls-wrapper">
       <div class="level-header">
-        <div class="level-title" id="levelTitle">Прелюдия</div>
+        <div class="level-title" id="levelTitle">Загрузка...</div>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
       </div>
 
@@ -439,15 +453,15 @@
   </div>
 
   <script>
-    // Флаг старта игры
+    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     let isGameStarted = false;
+    let gameMode = 'classic'; // 'classic' или 'random'
 
-    // Элементы переключения экранов
     const startScreen = document.getElementById('startScreen');
     const gameScreen = document.getElementById('gameScreen');
-    const startGameBtn = document.getElementById('startGameBtn');
+    const classicModeBtn = document.getElementById('classicModeBtn');
+    const randomModeBtn = document.getElementById('randomModeBtn');
 
-    // --- НОВЫЕ УРОВНИ ---
     const LEVELS = [
       { name: 'Прелюдия в одежде', type: 'separate', files: ['1._Man_Prelude_v_odezde.json', '1.1_Woman_Prelude_v_odezde.json'] },
       { name: 'Ласки руками в одежде', type: 'separate', files: ['2._Man_Fingering_v_odezde.json', '2.1_Woman_Masturbation_v_odezde.json'] },
@@ -461,18 +475,24 @@
       { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true }
     ];
 
+    // Переменные Classic режима
     let currentLevelIndex = 0;
     let currentLevel = LEVELS[0];
     let tasksData = {};
+    let currentGenderIndex = 0; 
+    
+    // Переменные Random режима
+    let randomModeData = { man: [], woman: [], mutual: [] };
+    let currentTurnType = 'man'; 
+    let noTimerUrls = new Set(); // Для отключения таймера (оргазм) в Random
+
+    // Общие переменные
     let usedTasks = [];
     let totalTasks = 0;
-    
     let isSpinning = false;
     let rotationAngle = 0;
     let isDataLoaded = false;
-    let currentGenderIndex = 0; 
     let currentTask = null; 
-
     let timerInterval = null;
     let isTimerRunning = false;
 
@@ -491,23 +511,33 @@
       timerDisplay: document.getElementById('timerDisplay')
     };
 
-    // --- КЛИК «НАЧАТЬ ИГРУ» ---
-    startGameBtn.addEventListener('click', () => {
-      startScreen.style.display = 'none';
-      gameScreen.style.display = ''; // Убираем скрытие, включится flex из CSS
-      isGameStarted = true;
-      unlockAudio(); // Надежно разблокируем аудиоконтекст
+    // --- ВЫБОР РЕЖИМА ---
+    classicModeBtn.addEventListener('click', () => {
+      gameMode = 'classic';
+      startGameUI();
+      loadCurrentLevel();
     });
 
+    randomModeBtn.addEventListener('click', () => {
+      gameMode = 'random';
+      startGameUI();
+      loadRandomGame();
+    });
+
+    function startGameUI() {
+      startScreen.style.display = 'none';
+      gameScreen.style.display = '';
+      isGameStarted = true;
+      unlockAudio();
+    }
+
+    // --- АУДИО ---
     function unlockAudio() {
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
     function playBeep() {
         if (!audioCtx) return;
-
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         
@@ -515,7 +545,6 @@
         gainNode.connect(audioCtx.destination);
         
         oscillator.type = 'triangle'; 
-        
         oscillator.frequency.setValueAtTime(500, audioCtx.currentTime); 
         oscillator.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.1);
         oscillator.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.3);
@@ -528,6 +557,7 @@
         oscillator.stop(audioCtx.currentTime + 0.8);
     }
 
+    // --- ТАЙМЕР ---
     function stopTimer() {
         clearInterval(timerInterval);
         elements.timerDisplay.textContent = '--:--';
@@ -535,27 +565,26 @@
         isTimerRunning = false;
     }
 
-    function startTimer() {
-        if (currentLevel.noTimer) {
+    function startTimer(taskUrl) {
+        const isNoTimer = (gameMode === 'classic' && currentLevel.noTimer) || 
+                          (gameMode === 'random' && noTimerUrls.has(taskUrl));
+
+        if (isNoTimer) {
             elements.timerDisplay.textContent = '';
             return;
         }
 
         stopTimer();
-        
         let duration = Math.floor(Math.random() * (90 - 60 + 1)) + 60;
-        
         updateTimerVisual(duration);
 
         timerInterval = setInterval(() => {
             duration--;
             updateTimerVisual(duration);
-            
             if (duration <= 0) {
                 clearInterval(timerInterval);
                 elements.timerDisplay.textContent = 'ВРЕМЯ!';
                 elements.timerDisplay.classList.add('alert');
-                
                 playBeep();
                 setTimeout(playBeep, 800);
             }
@@ -568,6 +597,43 @@
         elements.timerDisplay.textContent = `${m}:${s}`;
     }
 
+    // --- ОБНОВЛЕНИЕ UI КОЛЕСА ---
+    function updateWheelUI(type) {
+        if (type === 'man') {
+            elements.genderIcon.textContent = '🙎‍♂️';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel man';
+        } else if (type === 'woman') {
+            elements.genderIcon.textContent = '🙎‍♀️';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel woman';
+        } else if (type === 'mutual') {
+            elements.genderIcon.textContent = '🙎‍♂️\n🙎‍♀️';
+            elements.genderIcon.className = 'gender-icon mutual';
+            elements.wheel.className = 'wheel mutual';
+        }
+    }
+
+    function updateCounter() {
+      elements.taskCount.textContent = usedTasks.length;
+      elements.totalTasks.textContent = totalTasks;
+      
+      if (gameMode === 'classic') {
+          elements.levelTitle.textContent = currentLevel.name;
+          if (currentLevelIndex === LEVELS.length - 1) {
+            elements.nextLevelBtn.textContent = 'Закончить игру';
+          } else {
+            elements.nextLevelBtn.textContent = 'Дальше (→)';
+          }
+      } else {
+          elements.levelTitle.textContent = 'Случайные задания';
+          elements.nextLevelBtn.textContent = 'Закончить игру';
+      }
+    }
+
+    // --- ЗАГРУЗКА ДАННЫХ ---
+    
+    // 1. CLASSIC MODE
     async function loadCurrentLevel() {
       stopTimer();
       elements.skipBtn.disabled = true;
@@ -580,9 +646,7 @@
           tasksData = await response.json();
           usedTasks = [];
           totalTasks = tasksData.length;
-          elements.genderIcon.textContent = '🙎‍♂️\n🙎‍♀️';
-          elements.genderIcon.className = 'gender-icon mutual';
-          elements.wheel.className = 'wheel mutual';
+          updateWheelUI('mutual');
         } else {
           const [manData, womanData] = await Promise.all([
             fetch(currentLevel.files[0]).then(r => r.json()),
@@ -593,118 +657,155 @@
           totalTasks = manData.length + womanData.length;
           
           currentGenderIndex = 0;
-          elements.genderIcon.textContent = '🙎‍♂️';
-          elements.genderIcon.className = 'gender-icon';
-          elements.wheel.className = 'wheel man';
+          updateWheelUI('man');
         }
         
         updateCounter();
+        elements.gifWrapper.innerHTML = `<div class="message">Уровень загружен!<br>Крутите колесо.</div>`;
         checkGameStatus();
-        return true;
+        isDataLoaded = true;
       } catch (error) {
         elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка: ${error.message}</div>`;
-        return false;
       }
     }
 
-    function nextLevel() {
-      if (!isGameStarted) return;
-      if (currentLevelIndex < LEVELS.length - 1) {
-        currentLevelIndex++;
-        currentLevel = LEVELS[currentLevelIndex];
-        loadCurrentLevel();
-        unlockAudio(); 
-      } else {
-        stopTimer();
-        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉</div>`;
-      }
-    }
-
-    function updateCounter() {
-      elements.taskCount.textContent = usedTasks.length;
-      elements.totalTasks.textContent = totalTasks;
-      elements.levelTitle.textContent = currentLevel.name;
+    // 2. RANDOM MODE
+    async function loadRandomGame() {
+      stopTimer();
+      elements.skipBtn.disabled = true;
+      elements.gifWrapper.innerHTML = '<div class="message loading">Сбор всех заданий...</div>';
+      randomModeData = { man: [], woman: [], mutual: [] };
+      usedTasks = [];
+      noTimerUrls = new Set();
       
-      if (currentLevelIndex === LEVELS.length - 1) {
-        elements.nextLevelBtn.textContent = 'Закончить игру';
-      } else {
-        elements.nextLevelBtn.textContent = 'Дальше (→)';
+      try {
+        const fetchPromises = LEVELS.map(async lvl => {
+          if (lvl.type === 'mutual') {
+            const res = await fetch(lvl.file);
+            if (res.ok) {
+                const data = await res.json();
+                randomModeData.mutual.push(...data);
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
+            }
+          } else {
+            const resMan = await fetch(lvl.files[0]);
+            if (resMan.ok) {
+                const data = await resMan.json();
+                randomModeData.man.push(...data);
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
+            }
+            const resWoman = await fetch(lvl.files[1]);
+            if (resWoman.ok) {
+                const data = await resWoman.json();
+                randomModeData.woman.push(...data);
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
+            }
+          }
+        });
+
+        await Promise.all(fetchPromises);
+        totalTasks = randomModeData.man.length + randomModeData.woman.length + randomModeData.mutual.length;
+        
+        currentTurnType = 'man'; 
+        updateWheelUI('man');
+        updateCounter();
+        elements.gifWrapper.innerHTML = `<div class="message">Задания перемешаны!<br>Крутите колесо.</div>`;
+        checkGameStatus();
+        isDataLoaded = true;
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка загрузки: ${error.message}</div>`;
       }
     }
 
+    // --- ЛОГИКА ОЧЕРЕДИ RANDOM MODE ---
+    function getNextRandomTurn(current) {
+        if (current === 'man') return 'woman';
+        if (current === 'woman') return 'mutual';
+        return 'man';
+    }
+
+    function getAvailableRandom(type) {
+        return randomModeData[type].filter(task => !usedTasks.includes(task));
+    }
+
+    function advanceTurnRandom() {
+        let next = getNextRandomTurn(currentTurnType);
+        if (getAvailableRandom(next).length === 0) {
+            next = getNextRandomTurn(next);
+            if (getAvailableRandom(next).length === 0) {
+                next = getNextRandomTurn(next);
+            }
+        }
+        currentTurnType = next;
+    }
+
+    // --- ПОЛУЧЕНИЕ ЗАДАНИЯ ---
     function getRandomUnusedTask() {
       let availableTasks = [];
-      if (currentLevel.type === 'mutual') {
-        availableTasks = tasksData.filter(task => !usedTasks.includes(task));
+      let selectedTask = null;
+
+      if (gameMode === 'classic') {
+          if (currentLevel.type === 'mutual') {
+            availableTasks = tasksData.filter(task => !usedTasks.includes(task));
+          } else {
+            const gender = currentGenderIndex === 0 ? 'man' : 'woman';
+            availableTasks = tasksData[gender].filter(task => !usedTasks.includes(task));
+          }
+          
+          if (availableTasks.length === 0) return null;
+          selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+          
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
+          
+          if (currentLevel.type !== 'mutual') {
+            currentGenderIndex = (currentGenderIndex + 1) % 2;
+          }
       } else {
-        const gender = currentGenderIndex === 0 ? 'man' : 'woman';
-        availableTasks = tasksData[gender].filter(task => !usedTasks.includes(task));
-      }
-      
-      if (availableTasks.length === 0) return null;
-      
-      const randomIndex = Math.floor(Math.random() * availableTasks.length);
-      const selectedTask = availableTasks[randomIndex];
-      
-      usedTasks.push(selectedTask);
-      currentTask = selectedTask;
-      
-      if (currentLevel.type !== 'mutual') {
-        currentGenderIndex = (currentGenderIndex + 1) % 2;
+          availableTasks = getAvailableRandom(currentTurnType);
+          if (availableTasks.length === 0) return null;
+          
+          selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
+          
+          advanceTurnRandom();
       }
       
       updateCounter();
       return selectedTask;
     }
 
-    function skipTask() {
-        if (!isGameStarted || isSpinning || elements.skipBtn.disabled) return;
-
-        stopTimer(); 
-
-        usedTasks.pop();
-        currentTask = null;
-
-        if (currentLevel.type !== 'mutual') {
-            currentGenderIndex = (currentGenderIndex + 1) % 2; 
-            
-            const isMan = currentGenderIndex === 0;
-            elements.genderIcon.textContent = isMan ? '🙎‍♂️' : '🙎‍♀️';
-            elements.wheel.className = isMan ? 'wheel man' : 'wheel woman';
-        }
-
-        updateCounter();
-
-        elements.skipBtn.disabled = true;
-        elements.gifWrapper.innerHTML = `
-            <div class="message">
-                🚫 Задание пропущено.<br>
-                Крути снова!
-            </div>
-        `;
-    }
-
+    // --- ИГРОВЫЕ ДЕЙСТВИЯ ---
     function checkGameStatus() {
-      if (!hasAvailableTasks()) {
+      if (usedTasks.length >= totalTasks && totalTasks > 0) {
         elements.wheelContainer.classList.add('disabled');
         
-        const nextBtnText = currentLevelIndex === LEVELS.length - 1 ? 'Закончить игру' : 'Следующий уровень (→)';
-        
-        elements.gifWrapper.innerHTML = `
-          <div class="message">
-            ✅ Уровень пройден!<br>
-            <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
-              ${nextBtnText}
-            </button>
-          </div>
-        `;
+        if (gameMode === 'classic') {
+            const nextBtnText = currentLevelIndex === LEVELS.length - 1 ? 'Закончить игру' : 'Следующий уровень (→)';
+            elements.gifWrapper.innerHTML = `
+              <div class="message">
+                ✅ Уровень пройден!<br>
+                <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
+                  ${nextBtnText}
+                </button>
+              </div>
+            `;
+        } else {
+            elements.gifWrapper.innerHTML = `
+              <div class="message">
+                🎉 Вы выполнили абсолютно все задания!<br>
+                <button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">
+                  В главное меню
+                </button>
+              </div>
+            `;
+        }
         return false;
       }
       elements.wheelContainer.classList.remove('disabled');
       return true;
     }
-
-    function hasAvailableTasks() { return usedTasks.length < totalTasks; }
 
     function showGif(taskUrl) {
       elements.gifWrapper.innerHTML = '<div class="message loading">...</div>';
@@ -713,9 +814,8 @@
         elements.gifWrapper.innerHTML = '';
         elements.gifWrapper.appendChild(img);
         checkGameStatus();
-        
         elements.skipBtn.disabled = false;
-        startTimer();
+        startTimer(taskUrl);
       };
       img.onerror = () => {
         elements.gifWrapper.innerHTML = '<div class="error message">Ошибка картинки</div>';
@@ -728,7 +828,6 @@
       if (!isGameStarted || isSpinning || elements.wheelContainer.classList.contains('disabled') || !isDataLoaded) return;
       
       unlockAudio();
-      
       stopTimer(); 
       elements.skipBtn.disabled = true; 
       isSpinning = true;
@@ -742,10 +841,13 @@
         
         const taskUrl = getRandomUnusedTask();
         
-        if (currentLevel.type !== 'mutual') {
-          const isNextMan = currentGenderIndex === 0;
-          elements.genderIcon.textContent = isNextMan ? '🙎‍♂️' : '🙎‍♀️';
-          elements.wheel.className = isNextMan ? 'wheel man' : 'wheel woman';
+        // Обновляем иконку для следующего игрока
+        if (gameMode === 'classic') {
+            if (currentLevel.type !== 'mutual') {
+              updateWheelUI(currentGenderIndex === 0 ? 'man' : 'woman');
+            }
+        } else {
+            updateWheelUI(currentTurnType);
         }
         
         if (taskUrl) showGif(taskUrl);
@@ -754,18 +856,66 @@
       }, 2000);
     }
 
-    async function initGame() {
-      // Файлы начнут грузиться в фоне, пока пользователь читает стартовый экран
-      isDataLoaded = await loadCurrentLevel();
+    function nextLevel() {
+      if (!isGameStarted) return;
+      
+      if (gameMode === 'random') {
+          stopTimer();
+          elements.wheelContainer.classList.add('disabled');
+          elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
+          return;
+      }
+
+      if (currentLevelIndex < LEVELS.length - 1) {
+        currentLevelIndex++;
+        currentLevel = LEVELS[currentLevelIndex];
+        loadCurrentLevel();
+        unlockAudio(); 
+      } else {
+        stopTimer();
+        elements.wheelContainer.classList.add('disabled');
+        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
+      }
     }
 
+    function skipTask() {
+        if (!isGameStarted || isSpinning || elements.skipBtn.disabled) return;
+        stopTimer(); 
+
+        const skippedTask = usedTasks.pop();
+        currentTask = null;
+
+        if (gameMode === 'classic') {
+            if (currentLevel.type !== 'mutual') {
+                currentGenderIndex = (currentGenderIndex + 1) % 2; 
+                updateWheelUI(currentGenderIndex === 0 ? 'man' : 'woman');
+            }
+        } else {
+            // Возвращаем ход в случайном режиме в зависимости от того, из какой категории было пропущенное задание
+            if (randomModeData.man.includes(skippedTask)) currentTurnType = 'man';
+            else if (randomModeData.woman.includes(skippedTask)) currentTurnType = 'woman';
+            else if (randomModeData.mutual.includes(skippedTask)) currentTurnType = 'mutual';
+            updateWheelUI(currentTurnType);
+        }
+
+        updateCounter();
+        elements.skipBtn.disabled = true;
+        elements.gifWrapper.innerHTML = `
+            <div class="message">
+                🚫 Задание пропущено.<br>
+                Крути снова!
+            </div>
+        `;
+    }
+
+    // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
     elements.wheelContainer.onclick = spinWheel;
     elements.wheelContainer.ontouchstart = (e) => { e.preventDefault(); spinWheel(); };
     elements.nextLevelBtn.onclick = nextLevel;
     elements.skipBtn.onclick = skipTask;
 
     document.addEventListener('keydown', (event) => {
-        if (!isGameStarted) return; // Блокируем клавиши до старта игры
+        if (!isGameStarted) return; 
 
         if (event.code === 'Space') {
             event.preventDefault(); 
@@ -779,8 +929,6 @@
             skipTask();
         }
     });
-
-    initGame();
   </script>
 </body>
 </html>
