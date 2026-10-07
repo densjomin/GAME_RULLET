@@ -1,9 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>18+ Рулетка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <style>
+    :root {
+      --bg: #050510;
+      --wheel-man: #4a90e2;
+      --wheel-woman: #ff69b4;
+      --wheel-mutual: #f59e0b;
+      --text: #f7f7f7;
+      --card: #151522;
+      --warning: #ff4444;
+      --success: #4ade80;
+      --accent: #a855f7;
+      --skip: #4b5563;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top, #221133 0, #050510 70%);
+      background: radial-gradient(circle at top, #221133 0, #050510 70%);
       color: var(--text);
       font-family: system-ui, -apple-system, sans-serif;
       overflow-x: hidden;
@@ -11,76 +37,37 @@
       -webkit-user-select: none;
     }
 
-    button {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* =========================================================
-       ОБЩИЕ ЭКРАНЫ
-    ========================================================= */
-
-    .start-screen,
-    .mode-screen {
+    /* --- СТАРТОВЫЕ ЭКРАНЫ --- */
+    .start-screen {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background:
-        radial-gradient(
-          circle at center,
-          rgba(34, 17, 51, 0.92) 0,
-          rgba(5, 5, 16, 0.97) 100%
-        );
+      background: radial-gradient(circle at center, rgba(34, 17, 51, 0.9) 0, rgba(5, 5, 16, 0.95) 100%);
       z-index: 1000;
       padding: 20px;
     }
 
-    .mode-screen {
-      z-index: 1001;
-    }
-
-    .start-content,
-    .mode-content {
-      background: rgba(21, 21, 34, 0.84);
+    .start-content {
+      background: rgba(21, 21, 34, 0.8);
+      padding: 40px 30px;
       border-radius: 24px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(168, 85, 247, 0.2);
-      backdrop-filter: blur(12px);
-      width: 100%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.2);
+      max-width: 400px;
       text-align: center;
+      backdrop-filter: blur(10px);
+      width: 100%;
     }
-
-    .start-content {
-      max-width: 420px;
-      padding: 40px 30px;
-    }
-
-    .mode-content {
-      max-width: 620px;
-      padding: 32px 24px;
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-    }
-
-    /* =========================================================
-       ЗАГЛАВНЫЙ ЭКРАН
-    ========================================================= */
 
     .game-title {
       font-size: 32px;
       font-weight: 800;
-      background:
-        linear-gradient(
-          90deg,
-          var(--wheel-woman),
-          var(--accent),
-          var(--wheel-man)
-        );
+      background: linear-gradient(90deg, var(--wheel-woman), var(--accent), var(--wheel-man));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 20px;
@@ -92,14 +79,31 @@
       font-size: 16px;
       color: #ccc;
       margin-bottom: 30px;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
-    /* =========================================================
-       КНОПКИ
-    ========================================================= */
+    .mode-selection {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
 
-    .primary-btn {
+    .mode-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mode-desc {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 8px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .start-btn {
       background: var(--accent);
       color: white;
       border: none;
@@ -115,110 +119,37 @@
       width: 100%;
     }
 
-    .primary-btn:hover {
+    .start-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
       background: #b566ff;
     }
 
-    .primary-btn:active {
+    .start-btn:active {
       transform: translateY(1px);
     }
 
-    /* =========================================================
-       ЭКРАН ВЫБОРА РЕЖИМА
-    ========================================================= */
-
-    .mode-title {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 10px;
-      background:
-        linear-gradient(
-          90deg,
-          var(--wheel-woman),
-          var(--accent),
-          var(--wheel-man)
-        );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .random-btn {
+      background: var(--wheel-mutual);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
     }
 
-    .mode-subtitle {
-      color: #aaa;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 24px;
+    .random-btn:hover {
+      background: #ffa726;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
     }
 
-    .mode-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .full-random-btn {
+      background: #e11d48;
+      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
     }
 
-    .mode-option {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 18px;
-      padding: 16px;
-      text-align: left;
-      transition: all 0.25s ease;
+    .full-random-btn:hover {
+      background: #be123c;
+      box-shadow: 0 6px 20px rgba(225, 29, 72, 0.6);
     }
 
-    .mode-option:hover {
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(168,85,247,0.45);
-      transform: translateY(-1px);
-    }
-
-    .mode-btn {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 15px 18px;
-      color: white;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      transition: all 0.2s ease;
-      background: linear-gradient(135deg, #8b5cf6, #a855f7);
-      box-shadow: 0 5px 16px rgba(168,85,247,0.25);
-    }
-
-    .mode-btn:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
-
-    .mode-btn:active {
-      transform: scale(0.985);
-    }
-
-    .mode-btn.random {
-      background: linear-gradient(135deg, #d97706, #f59e0b);
-      box-shadow: 0 5px 16px rgba(245,158,11,0.25);
-    }
-
-    .mode-btn.full-random {
-      background: linear-gradient(135deg, #e11d48, #a855f7);
-      box-shadow: 0 5px 16px rgba(225,29,72,0.25);
-    }
-
-    .mode-description {
-      color: #c7c7c7;
-      font-size: 14px;
-      line-height: 1.55;
-      margin-top: 11px;
-      padding: 0 4px;
-    }
-
-    /* =========================================================
-       ОСНОВНАЯ ИГРА
-    ========================================================= */
+    /* ---------------------- */
 
     .main-content {
       display: flex;
@@ -236,7 +167,7 @@
       padding: 0;
       border: 1px solid rgba(255, 255, 255, 0.1);
       width: 100%;
-      flex: 1;
+      flex: 1; 
       display: flex;
       align-items: center;
       justify-content: center;
@@ -304,16 +235,10 @@
       transition: all 0.2s;
       white-space: nowrap;
       box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
-      outline: none;
+      outline: none; 
     }
 
-    .next-level-btn:active {
-      transform: scale(0.95);
-    }
-
-    /* =========================================================
-       КОЛЕСО + ИНФОРМАЦИЯ
-    ========================================================= */
+    .next-level-btn:active { transform: scale(0.95); }
 
     .wheel-section {
       display: flex;
@@ -327,12 +252,32 @@
     }
 
     .left-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1;
-      align-items: flex-start;
-      justify-content: flex-end;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+
+    .target-label {
+        background: var(--accent);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 14px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        width: 100%;
+        max-width: 140px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        visibility: hidden; /* Скрываем по умолчанию, сохраняя место в верстке */
+    }
+
+    .target-label.visible {
+        visibility: visible;
     }
 
     .task-counter {
@@ -340,116 +285,58 @@
       font-weight: 600;
       color: #aaa;
     }
-
-    .task-counter span {
-      color: #fff;
-      font-size: 16px;
-    }
+    .task-counter span { color: #fff; font-size: 16px; }
 
     .timer-display {
-      font-family: monospace;
-      font-size: 24px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 0 0 10px rgba(255,255,255,0.3);
-      min-height: 29px;
+        font-family: monospace;
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        min-height: 29px;
     }
-
-    .timer-display.alert {
-      color: var(--warning);
-      animation: pulse 1s infinite;
-    }
+    .timer-display.alert { color: var(--warning); animation: pulse 1s infinite; }
 
     @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
     }
 
     .skip-btn {
-      background: transparent;
-      border: 2px solid #555;
-      color: #888;
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-      text-transform: uppercase;
-      width: 100%;
-      max-width: 140px;
-      outline: none;
+        background: transparent;
+        border: 2px solid #555;
+        color: #888;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        width: 100%;
+        max-width: 140px;
+        outline: none;
     }
 
     .skip-btn:hover {
-      border-color: #777;
-      color: #fff;
-      background: rgba(255,255,255,0.05);
+        border-color: #777;
+        color: #fff;
+        background: rgba(255,255,255,0.05);
     }
-
-    .skip-btn:active {
-      transform: scale(0.95);
-    }
-
+    .skip-btn:active { transform: scale(0.95); }
+    
     .skip-btn:disabled {
-      opacity: 0.3;
-      pointer-events: none;
-      border-color: #333;
+        opacity: 0.3;
+        pointer-events: none;
+        border-color: #333;
     }
 
     .wheel-wrapper-right {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      min-width: 110px;
-    }
-
-    /* Плашка получателя */
-    .recipient-badge {
-      min-width: 110px;
-      padding: 7px 10px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-      color: #fff;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-
-    .recipient-badge.man {
-      background: rgba(74, 144, 226, 0.22);
-      border-color: rgba(74, 144, 226, 0.5);
-      box-shadow: 0 0 14px rgba(74,144,226,0.18);
-    }
-
-    .recipient-badge.woman {
-      background: rgba(255, 105, 180, 0.22);
-      border-color: rgba(255, 105, 180, 0.5);
-      box-shadow: 0 0 14px rgba(255,105,180,0.18);
-    }
-
-    .recipient-badge.mutual {
-      background: rgba(245, 158, 11, 0.22);
-      border-color: rgba(245, 158, 11, 0.5);
-      box-shadow: 0 0 14px rgba(245,158,11,0.18);
-    }
-
-    .recipient-badge.neutral {
-      opacity: 0.7;
-    }
-
-    .spin-hint {
-      color: #fff;
-      font-size: 10px;
-      opacity: 0.5;
-      text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
     }
 
     .wheel-container {
@@ -460,104 +347,49 @@
       position: relative;
     }
 
-    .wheel-container:active {
-      transform: scale(0.95);
-    }
+    .wheel-container:active { transform: scale(0.95); }
+    .wheel-container.disabled { opacity: 0.4; pointer-events: none; }
 
-    .wheel-container.disabled {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-
-    /*
-      НОВОЕ НЕЙТРАЛЬНОЕ КОЛЕСО.
-      Здесь больше нет мужского/женского изображения.
-    */
     .wheel {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.18);
+      border: 3px solid #333;
       position: relative;
-      overflow: hidden;
-
-      background:
-        radial-gradient(
-          circle at 50% 45%,
-          rgba(255,255,255,0.12) 0%,
-          rgba(255,255,255,0.03) 18%,
-          transparent 19%
-        ),
-        repeating-conic-gradient(
-          from -8deg,
-          rgba(255,255,255,0.11) 0deg 2deg,
-          transparent 2deg 10deg
-        ),
-        radial-gradient(
-          circle,
-          #392542 0%,
-          #22152b 45%,
-          #0f0913 100%
-        );
-
-      transition:
-        transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-      box-shadow:
-        0 6px 20px rgba(0,0,0,0.6),
-        inset 0 0 20px rgba(255,255,255,0.08);
+      transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
     }
 
-    .wheel::before {
-      content: "";
+    .wheel.man { background: var(--wheel-man); box-shadow: 0 0 15px var(--wheel-man); }
+    .wheel.woman { background: var(--wheel-woman); box-shadow: 0 0 15px var(--wheel-woman); }
+    .wheel.mutual { background: var(--wheel-mutual); box-shadow: 0 0 15px var(--wheel-mutual); }
+    .wheel.full-random { 
+      background: radial-gradient(circle, #f43f5e, #be123c); 
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.6); 
+    }
+
+    .gender-icon {
       position: absolute;
-      inset: 10px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.18);
-      box-shadow:
-        inset 0 0 15px rgba(0,0,0,0.5),
-        0 0 8px rgba(255,255,255,0.05);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .gender-icon.mutual { font-size: 20px; white-space: pre; line-height: 1; }
+
+    .spin-hint {
+        color: #fff;
+        font-size: 10px;
+        opacity: 0.5;
+        text-align: center;
     }
 
-    .wheel::after {
-      content: "✦";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -53%);
-      font-size: 28px;
-      color: rgba(255,255,255,0.92);
-      text-shadow:
-        0 2px 7px rgba(0,0,0,0.7),
-        0 0 12px rgba(168,85,247,0.45);
-    }
-
-    .message {
-      color: #888;
-      font-size: 16px;
-      padding: 24px;
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .error {
-      color: var(--warning);
-      font-weight: 600;
-    }
-
-    .loading {
-      color: #aaa;
-    }
-
-    /* =========================================================
-       DESKTOP
-    ========================================================= */
+    .message { color: #888; font-size: 16px; padding: 24px; text-align: center; line-height: 1.5; }
+    .error { color: var(--warning); font-weight: 600; }
+    .loading { color: #aaa; }
 
     @media (min-width: 1024px) {
-      body {
-        overflow: hidden;
-        padding: 20px;
-      }
+      body { overflow: hidden; padding: 20px; }
 
       .main-content {
         max-width: 95vw;
@@ -568,30 +400,27 @@
       }
 
       .result-card {
-        flex-grow: 1;
+        flex-grow: 1; 
         width: 100%;
-        background: #000;
+        background: #000; 
         border: 1px solid #333;
         box-shadow: 0 0 50px rgba(0,0,0,0.5);
         margin-bottom: 60px;
       }
 
       .controls-wrapper {
-        max-width: 900px;
+        max-width: 800px;
         background: var(--card);
         padding: 20px 40px;
         border-radius: 24px;
         border: 1px solid rgba(255,255,255,0.1);
         box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        flex-direction: row;
+        flex-direction: row; 
         align-items: center;
       }
 
-      .level-header {
-        width: auto;
-        flex: 1;
-      }
-
+      .level-header { width: auto; flex: 1; }
+      
       .wheel-section {
         width: auto;
         background: transparent;
@@ -603,2461 +432,688 @@
       }
 
       .left-controls {
-        align-items: flex-end;
-        flex: none;
+          align-items: flex-end;
+          flex: none;
       }
 
-      .wheel-wrapper-right {
-        min-width: 120px;
-      }
-
-      .wheel-container {
-        width: 100px;
-        height: 100px;
-      }
-
-      .recipient-badge {
-        min-width: 120px;
-        font-size: 12px;
-      }
-
-      .spin-hint {
-        font-size: 12px;
-      }
-
-      .skip-btn {
-        text-align: center;
-      }
+      .wheel-container { width: 100px; height: 100px; }
+      .spin-hint { font-size: 12px; }
+      .skip-btn { text-align: center; }
     }
 
     @media (max-width: 1023px) {
-      .spin-hint {
-        display: none;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .start-content {
-        padding: 30px 20px;
-      }
-
-      .mode-content {
-        padding: 24px 16px;
-      }
-
-      .game-title {
-        font-size: 27px;
-      }
-
-      .mode-title {
-        font-size: 24px;
-      }
-
-      .mode-description {
-        font-size: 13px;
-      }
+        .spin-hint { display: none; }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- =========================================================
-       ЗАГЛАВНЫЙ ЭКРАН
-  ========================================================= -->
-
+  <!-- ЗАГЛАВНЫЙ ЭКРАН -->
   <div id="startScreen" class="start-screen">
     <div class="start-content">
-
       <h1 class="game-title">СЕКС РУЛЕТКА</h1>
-
       <p class="game-description">
-        Горячая игра для пар. Выберите режим, крутите колесо
-        и переходите на новые уровни удовольствия.
+        Горячая игра для пар. Выберите режим, крутите колесо и переходите на новые уровни удовольствия.
       </p>
-
-      <button id="chooseModeBtn" class="primary-btn">
-        Выбор режима
-      </button>
-
+      <button id="goToModesBtn" class="start-btn">Выбор режима</button>
     </div>
   </div>
 
-
-  <!-- =========================================================
-       ЭКРАН ВЫБОРА РЕЖИМА
-  ========================================================= -->
-
-  <div id="modeScreen" class="mode-screen" style="display: none;">
-    <div class="mode-content">
-
-      <h2 class="mode-title">ВЫБОР РЕЖИМА</h2>
-
-      <p class="mode-subtitle">
-        Выберите способ, по которому будут выпадать задания.
-      </p>
-
-      <div class="mode-list">
-
-        <!-- 1. КЛАССИЧЕСКИЙ -->
-        <div class="mode-option">
-
-          <button id="classicModeBtn" class="mode-btn">
-            Классический режим
-          </button>
-
-          <p class="mode-description">
-            Задания выполняются по очереди. Начинаются от заданий
-            с уровня прелюдии и повышаются до заданий уровня
-            где партнеры достигают оргазма.
-          </p>
-
+  <!-- ЭКРАН ВЫБОРА РЕЖИМА -->
+  <div id="modeScreen" class="start-screen" style="display: none;">
+    <div class="start-content" style="max-width: 450px; padding: 30px 20px;">
+      <h2 class="game-title" style="font-size: 26px; margin-bottom: 25px;">Выбор режима</h2>
+      
+      <div class="mode-selection">
+        <div class="mode-item">
+          <button id="classicModeBtn" class="start-btn">Классический режим</button>
+          <div class="mode-desc">Задания выполняются по очереди. Начинаются от заданий с уровня прелюдии и повышаются до заданий уровня где партнеры достигают оргазма.</div>
         </div>
-
-
-        <!-- 2. СЛУЧАЙНЫЕ -->
-        <div class="mode-option">
-
-          <button id="randomModeBtn" class="mode-btn random">
-            Случайные задания
-          </button>
-
-          <p class="mode-description">
-            Задания перемешаны по уровням, но выполняются по очереди.
-          </p>
-
+        
+        <div class="mode-item">
+          <button id="randomModeBtn" class="start-btn random-btn">Случайные задания</button>
+          <div class="mode-desc">Задания перемешаны по уровням, но выполняются по очереди.</div>
         </div>
-
-
-        <!-- 3. ПОЛНЫЙ РАНДОМ -->
-        <div class="mode-option">
-
-          <button id="fullRandomModeBtn" class="mode-btn full-random">
-            Полный рандом
-          </button>
-
-          <p class="mode-description">
-            Задания выпадают из всех уровней рандомно.
-          </p>
-
+        
+        <div class="mode-item">
+          <button id="fullRandomModeBtn" class="start-btn full-random-btn">Полный рандом</button>
+          <div class="mode-desc">Задания выпадают из всех уровней совершенно рандомно. Очередности крутящих нет.</div>
         </div>
-
       </div>
     </div>
   </div>
 
-
-  <!-- =========================================================
-       ОСНОВНАЯ ИГРА
-  ========================================================= -->
-
+  <!-- ОСНОВНАЯ ИГРА (Скрыта по умолчанию) -->
   <div id="gameScreen" class="main-content" style="display: none;">
-
     <div class="result-card">
-
       <div class="gif-wrapper" id="gifWrapper">
-        <div class="message loading">
-          Загружаем задания...
-        </div>
+        <div class="message loading">Загружаем задания...</div>
       </div>
-
     </div>
-
 
     <div class="controls-wrapper">
-
       <div class="level-header">
-
-        <div class="level-title" id="levelTitle">
-          Загрузка...
-        </div>
-
-        <button
-          class="next-level-btn"
-          id="nextLevelBtn"
-          title="Стрелка Вправо"
-        >
-          Дальше (→)
-        </button>
-
+        <div class="level-title" id="levelTitle">Загрузка...</div>
+        <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
       </div>
-
 
       <div class="wheel-section">
-
         <div class="left-controls">
+            <!-- Плашка для Полного Рандома -->
+            <div id="targetLabel" class="target-label">Для него</div>
 
-          <div class="task-counter" id="taskCounter">
-            <div>
-              <span id="taskCount">0</span>
-              /
-              <span id="totalTasks">?</span>
+            <div class="task-counter" id="taskCounter">
+                <div><span id="taskCount">0</span> / <span id="totalTasks">?</span></div>
             </div>
-          </div>
+            
+            <div id="timerDisplay" class="timer-display">--:--</div>
 
-          <div id="timerDisplay" class="timer-display">
-            --:--
-          </div>
-
-          <button
-            class="skip-btn"
-            id="skipBtn"
-            disabled
-            title="Enter"
-          >
-            ПРОПУСТИТЬ
-          </button>
-
+            <button class="skip-btn" id="skipBtn" disabled title="Enter">ПРОПУСТИТЬ</button>
         </div>
-
 
         <div class="wheel-wrapper-right">
-
-          <!-- Плашка получателя задания -->
-          <div
-            id="recipientBadge"
-            class="recipient-badge neutral"
-          >
-            Крути колесо
-          </div>
-
-          <div class="spin-hint">
-            Пробел - Крутить
-          </div>
-
-          <div
-            class="wheel-container"
-            id="wheelContainer"
-            title="Пробел"
-          >
-
-            <div
-              id="wheel"
-              class="wheel"
-            >
+            <div class="spin-hint">Пробел - Крутить</div>
+            <div class="wheel-container" id="wheelContainer" title="Пробел">
+              <div id="wheel" class="wheel man">
+                <div class="gender-icon" id="genderIcon">🙎‍♂️</div>
+              </div>
             </div>
-
-          </div>
-
         </div>
-
       </div>
-
     </div>
   </div>
 
-
   <script>
-
-    /* =========================================================
-       ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-    ========================================================= */
-
+    // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     let isGameStarted = false;
-
-    /*
-      Возможные режимы:
-
-      classic
-      random
-      fullRandom
-    */
-    let gameMode = 'classic';
-
-
-    /* =========================================================
-       ЭКРАНЫ
-    ========================================================= */
+    let gameMode = 'classic'; // 'classic', 'random', 'full_random'
 
     const startScreen = document.getElementById('startScreen');
     const modeScreen = document.getElementById('modeScreen');
     const gameScreen = document.getElementById('gameScreen');
 
-    const chooseModeBtn = document.getElementById('chooseModeBtn');
+    const goToModesBtn = document.getElementById('goToModesBtn');
+    const classicModeBtn = document.getElementById('classicModeBtn');
+    const randomModeBtn = document.getElementById('randomModeBtn');
+    const fullRandomModeBtn = document.getElementById('fullRandomModeBtn');
 
-    const classicModeBtn =
-      document.getElementById('classicModeBtn');
-
-    const randomModeBtn =
-      document.getElementById('randomModeBtn');
-
-    const fullRandomModeBtn =
-      document.getElementById('fullRandomModeBtn');
-
-
-    /* =========================================================
-       УРОВНИ
-    ========================================================= */
-
+    // Обновленные уровни (+Секс)
     const LEVELS = [
-      {
-        name: 'Прелюдия в одежде',
-        type: 'separate',
-        files: [
-          '1._Man_Prelude_v_odezde.json',
-          '1.1_Woman_Prelude_v_odezde.json'
-        ]
-      },
-
-      {
-        name: 'Ласки руками в одежде',
-        type: 'separate',
-        files: [
-          '2._Man_Fingering_v_odezde.json',
-          '2.1_Woman_Masturbation_v_odezde.json'
-        ]
-      },
-
-      {
-        name: 'Оральные ласки в одежде',
-        type: 'separate',
-        files: [
-          '3._Man_Cunnilingus_v_odezde.json',
-          '3.1_Woman_Minet_v_odezde.json'
-        ]
-      },
-
-      {
-        name: 'Взаимно в одежде',
-        type: 'mutual',
-        file: '4._Vzaimno_v_odezde.json'
-      },
-
-      {
-        name: 'Раздевание',
-        type: 'separate',
-        files: [
-          '5._Man_Razdevanie.json',
-          '5.1_Woman_Razdevanie.json'
-        ]
-      },
-
-      {
-        name: 'Прелюдия без одежды',
-        type: 'separate',
-        files: [
-          '6._Man_Prelude_bez_odezdy.json',
-          '6.1_Woman_Prelude_bez_odezdy.json'
-        ]
-      },
-
-      {
-        name: 'Ласки руками без одежды',
-        type: 'separate',
-        files: [
-          '7._Man_Fingering_bez_odezdy.json',
-          '7.1_Woman_Masturbation_bez_odezdy.json'
-        ]
-      },
-
-      {
-        name: 'Оральные ласки без одежды',
-        type: 'separate',
-        files: [
-          '8._Man_Cunnilingus_bez_odezdy.json',
-          '8.1_Woman_Minet_bez_odezdy.json'
-        ]
-      },
-
-      {
-        name: 'Взаимно без одежды',
-        type: 'mutual',
-        file: '9._Vzaimno_bez_odezdy.json'
-      },
-
-      {
-        name: 'Оргазм',
-        type: 'separate',
-        files: [
-          '11._Man_Orgazm.json',
-          '11.1_Woman_Orgazm.json'
-        ],
-        noTimer: true
-      }
+      { name: 'Прелюдия в одежде', type: 'separate', files: ['1._Man_Prelude_v_odezde.json', '1.1_Woman_Prelude_v_odezde.json'] },
+      { name: 'Ласки руками в одежде', type: 'separate', files: ['2._Man_Fingering_v_odezde.json', '2.1_Woman_Masturbation_v_odezde.json'] },
+      { name: 'Оральные ласки в одежде', type: 'separate', files: ['3._Man_Cunnilingus_v_odezde.json', '3.1_Woman_Minet_v_odezde.json'] },
+      { name: 'Взаимно в одежде', type: 'mutual', file: '4._Vzaimno_v_odezde.json' },
+      { name: 'Раздевание', type: 'separate', files: ['5._Man_Razdevanie.json', '5.1_Woman_Razdevanie.json'] },
+      { name: 'Прелюдия без одежды', type: 'separate', files: ['6._Man_Prelude_bez_odezdy.json', '6.1_Woman_Prelude_bez_odezdy.json'] },
+      { name: 'Ласки руками без одежды', type: 'separate', files: ['7._Man_Fingering_bez_odezdy.json', '7.1_Woman_Masturbation_bez_odezdy.json'] },
+      { name: 'Оральные ласки без одежды', type: 'separate', files: ['8._Man_Cunnilingus_bez_odezdy.json', '8.1_Woman_Minet_bez_odezdy.json'] },
+      { name: 'Взаимно без одежды', type: 'mutual', file: '9._Vzaimno_bez_odezdy.json' },
+      { name: 'Секс', type: 'separate', files: ['10._Man_Sex.json', '10.1_Womam_Sex.json'] },
+      { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true }
     ];
 
-
-    /* =========================================================
-       CLASSIC MODE
-    ========================================================= */
-
+    // Переменные Classic режима
     let currentLevelIndex = 0;
     let currentLevel = LEVELS[0];
-
     let tasksData = {};
+    let currentGenderIndex = 0; 
+    
+    // Переменные Random режима
+    let randomModeData = { man: [], woman: [], mutual: [] };
+    let currentTurnType = 'man'; 
+    let noTimerUrls = new Set(); 
 
-    /*
-      0 = man
-      1 = woman
-    */
-    let currentGenderIndex = 0;
+    // Переменные Full Random режима
+    let allFullRandomTasks = [];
+    let currentTarget = null; // Для плашки (man, woman, mutual)
 
-
-    /* =========================================================
-       RANDOM MODE
-    ========================================================= */
-
-    let randomModeData = {
-      man: [],
-      woman: [],
-      mutual: []
-    };
-
-    /*
-      Старый случайный режим сохраняет очередь:
-      man -> woman -> mutual -> man...
-    */
-    let currentTurnType = 'man';
-
-
-    /* =========================================================
-       FULL RANDOM MODE
-    ========================================================= */
-
-    /*
-      Здесь все задания хранятся как объекты:
-
-      {
-        url: "...",
-        type: "man" / "woman" / "mutual",
-        noTimer: true/false
-      }
-    */
-    let fullRandomData = [];
-    let usedFullRandomTasks = [];
-
-
-    /* =========================================================
-       ОБЩИЕ
-    ========================================================= */
-
-    let noTimerUrls = new Set();
-
+    // Общие переменные
     let usedTasks = [];
     let totalTasks = 0;
-
     let isSpinning = false;
     let rotationAngle = 0;
     let isDataLoaded = false;
-
-    let currentTask = null;
-
+    let currentTask = null; 
     let timerInterval = null;
     let isTimerRunning = false;
 
-
-    /* =========================================================
-       АУДИО
-    ========================================================= */
-
-    const audioCtx =
-      new (window.AudioContext || window.webkitAudioContext)();
-
-
-    /* =========================================================
-       DOM
-    ========================================================= */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     const elements = {
-
-      levelTitle:
-        document.getElementById('levelTitle'),
-
-      nextLevelBtn:
-        document.getElementById('nextLevelBtn'),
-
-      taskCount:
-        document.getElementById('taskCount'),
-
-      totalTasks:
-        document.getElementById('totalTasks'),
-
-      wheelContainer:
-        document.getElementById('wheelContainer'),
-
-      wheel:
-        document.getElementById('wheel'),
-
-      recipientBadge:
-        document.getElementById('recipientBadge'),
-
-      gifWrapper:
-        document.getElementById('gifWrapper'),
-
-      skipBtn:
-        document.getElementById('skipBtn'),
-
-      timerDisplay:
-        document.getElementById('timerDisplay')
-
+      levelTitle: document.getElementById('levelTitle'),
+      nextLevelBtn: document.getElementById('nextLevelBtn'),
+      taskCount: document.getElementById('taskCount'),
+      totalTasks: document.getElementById('totalTasks'),
+      wheelContainer: document.getElementById('wheelContainer'),
+      wheel: document.getElementById('wheel'),
+      genderIcon: document.getElementById('genderIcon'),
+      gifWrapper: document.getElementById('gifWrapper'),
+      skipBtn: document.getElementById('skipBtn'),
+      timerDisplay: document.getElementById('timerDisplay'),
+      targetLabel: document.getElementById('targetLabel')
     };
 
-
-    /* =========================================================
-       ПЕРЕХОД К ВЫБОРУ РЕЖИМА
-    ========================================================= */
-
-    chooseModeBtn.addEventListener('click', () => {
-
-      startScreen.style.display = 'none';
-      modeScreen.style.display = 'flex';
-
+    // --- ПЕРЕХОДЫ МЕЖДУ ЭКРАНАМИ ---
+    goToModesBtn.addEventListener('click', () => {
+        startScreen.style.display = 'none';
+        modeScreen.style.display = 'flex';
     });
-
-
-    /* =========================================================
-       ЗАПУСК РЕЖИМОВ
-    ========================================================= */
 
     classicModeBtn.addEventListener('click', () => {
-
       gameMode = 'classic';
-
       startGameUI();
-
       loadCurrentLevel();
-
     });
-
 
     randomModeBtn.addEventListener('click', () => {
-
       gameMode = 'random';
-
       startGameUI();
-
       loadRandomGame();
-
     });
-
 
     fullRandomModeBtn.addEventListener('click', () => {
-
-      gameMode = 'fullRandom';
-
+      gameMode = 'full_random';
       startGameUI();
-
       loadFullRandomGame();
-
     });
 
-
-    /* =========================================================
-       СТАРТ ИГРЫ
-    ========================================================= */
-
     function startGameUI() {
-
       startScreen.style.display = 'none';
       modeScreen.style.display = 'none';
       gameScreen.style.display = '';
-
       isGameStarted = true;
-
       unlockAudio();
-
     }
 
-
-    /* =========================================================
-       АУДИО
-    ========================================================= */
-
+    // --- АУДИО ---
     function unlockAudio() {
-
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
+        if (audioCtx.state === 'suspended') audioCtx.resume();
     }
-
 
     function playBeep() {
+        if (!audioCtx) return;
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.type = 'triangle'; 
+        oscillator.frequency.setValueAtTime(500, audioCtx.currentTime); 
+        oscillator.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+        oscillator.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.3);
+        
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.05); 
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
 
-      if (!audioCtx) return;
-
-      const oscillator =
-        audioCtx.createOscillator();
-
-      const gainNode =
-        audioCtx.createGain();
-
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-
-      oscillator.type = 'triangle';
-
-      oscillator.frequency.setValueAtTime(
-        500,
-        audioCtx.currentTime
-      );
-
-      oscillator.frequency.linearRampToValueAtTime(
-        800,
-        audioCtx.currentTime + 0.1
-      );
-
-      oscillator.frequency.linearRampToValueAtTime(
-        500,
-        audioCtx.currentTime + 0.3
-      );
-
-
-      gainNode.gain.setValueAtTime(
-        0,
-        audioCtx.currentTime
-      );
-
-      gainNode.gain.linearRampToValueAtTime(
-        0.8,
-        audioCtx.currentTime + 0.05
-      );
-
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        audioCtx.currentTime + 0.8
-      );
-
-
-      oscillator.start(
-        audioCtx.currentTime
-      );
-
-      oscillator.stop(
-        audioCtx.currentTime + 0.8
-      );
-
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.8);
     }
 
-
-    /* =========================================================
-       ТАЙМЕР
-    ========================================================= */
-
+    // --- ТАЙМЕР ---
     function stopTimer() {
-
-      clearInterval(timerInterval);
-
-      elements.timerDisplay.textContent = '--:--';
-
-      elements.timerDisplay.className =
-        'timer-display';
-
-      isTimerRunning = false;
-
+        clearInterval(timerInterval);
+        elements.timerDisplay.textContent = '--:--';
+        elements.timerDisplay.className = 'timer-display';
+        isTimerRunning = false;
     }
 
+    function startTimer(taskUrl) {
+        const isNoTimer = (gameMode === 'classic' && currentLevel.noTimer) || 
+                          ((gameMode === 'random' || gameMode === 'full_random') && noTimerUrls.has(taskUrl));
 
-    function startTimer(taskUrl, taskNoTimer = false) {
-
-      const isNoTimer =
-        taskNoTimer ||
-        (
-          gameMode === 'classic' &&
-          currentLevel.noTimer
-        ) ||
-        (
-          gameMode !== 'classic' &&
-          noTimerUrls.has(taskUrl)
-        );
-
-
-      if (isNoTimer) {
+        if (isNoTimer) {
+            elements.timerDisplay.textContent = '';
+            return;
+        }
 
         stopTimer();
-
-        elements.timerDisplay.textContent = '';
-
-        return;
-
-      }
-
-
-      stopTimer();
-
-
-      let duration =
-        Math.floor(
-          Math.random() * (90 - 60 + 1)
-        ) + 60;
-
-
-      updateTimerVisual(duration);
-
-
-      timerInterval = setInterval(() => {
-
-        duration--;
-
+        let duration = Math.floor(Math.random() * (90 - 60 + 1)) + 60;
         updateTimerVisual(duration);
 
-
-        if (duration <= 0) {
-
-          clearInterval(timerInterval);
-
-          elements.timerDisplay.textContent =
-            'ВРЕМЯ!';
-
-          elements.timerDisplay.classList.add(
-            'alert'
-          );
-
-          playBeep();
-
-          setTimeout(
-            playBeep,
-            800
-          );
-
-        }
-
-      }, 1000);
-
-      isTimerRunning = true;
-
+        timerInterval = setInterval(() => {
+            duration--;
+            updateTimerVisual(duration);
+            if (duration <= 0) {
+                clearInterval(timerInterval);
+                elements.timerDisplay.textContent = 'ВРЕМЯ!';
+                elements.timerDisplay.classList.add('alert');
+                playBeep();
+                setTimeout(playBeep, 800);
+            }
+        }, 1000);
     }
-
 
     function updateTimerVisual(seconds) {
-
-      const m =
-        Math.floor(seconds / 60)
-          .toString()
-          .padStart(2, '0');
-
-      const s =
-        (seconds % 60)
-          .toString()
-          .padStart(2, '0');
-
-
-      elements.timerDisplay.textContent =
-        `${m}:${s}`;
-
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        elements.timerDisplay.textContent = `${m}:${s}`;
     }
 
-
-    /* =========================================================
-       ПЛАШКА "ДЛЯ КОГО"
-    ========================================================= */
-
-    function updateRecipientBadge(type) {
-
-      elements.recipientBadge.className =
-        'recipient-badge';
-
-
-      if (type === 'man') {
-
-        elements.recipientBadge.textContent =
-          'Для него';
-
-        elements.recipientBadge.classList.add(
-          'man'
-        );
-
-      }
-
-      else if (type === 'woman') {
-
-        elements.recipientBadge.textContent =
-          'Для нее';
-
-        elements.recipientBadge.classList.add(
-          'woman'
-        );
-
-      }
-
-      else if (type === 'mutual') {
-
-        elements.recipientBadge.textContent =
-          'Для двоих';
-
-        elements.recipientBadge.classList.add(
-          'mutual'
-        );
-
-      }
-
-      else {
-
-        elements.recipientBadge.textContent =
-          'Крути колесо';
-
-        elements.recipientBadge.classList.add(
-          'neutral'
-        );
-
-      }
-
+    // --- ОБНОВЛЕНИЕ UI КОЛЕСА ---
+    function updateWheelUI(type) {
+        if (type === 'man') {
+            elements.genderIcon.textContent = '🙎‍♂️';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel man';
+        } else if (type === 'woman') {
+            elements.genderIcon.textContent = '🙎‍♀️';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel woman';
+        } else if (type === 'mutual') {
+            elements.genderIcon.textContent = '🙎‍♂️\n🙎‍♀️';
+            elements.genderIcon.className = 'gender-icon mutual';
+            elements.wheel.className = 'wheel mutual';
+        } else if (type === 'full_random') {
+            elements.genderIcon.textContent = '🔥';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel full-random';
+        }
     }
-
-
-    /* =========================================================
-       КОЛЕСО
-    ========================================================= */
-
-    /*
-      Колесо теперь нейтральное и не меняется
-      в зависимости от пола игрока.
-    */
-    function updateWheelUI() {
-
-      elements.wheel.className =
-        'wheel';
-
-    }
-
-
-    /* =========================================================
-       СЧЕТЧИК
-    ========================================================= */
 
     function updateCounter() {
-
-      let currentUsedCount = usedTasks.length;
-
-
-      if (gameMode === 'fullRandom') {
-
-        currentUsedCount =
-          usedFullRandomTasks.length;
-
-      }
-
-
-      elements.taskCount.textContent =
-        currentUsedCount;
-
-      elements.totalTasks.textContent =
-        totalTasks;
-
-
-      /* -------------------------
-         CLASSIC
-      ------------------------- */
-
+      elements.taskCount.textContent = usedTasks.length;
+      elements.totalTasks.textContent = totalTasks;
+      
       if (gameMode === 'classic') {
-
-        elements.levelTitle.textContent =
-          currentLevel.name;
-
-
-        if (
-          currentLevelIndex ===
-          LEVELS.length - 1
-        ) {
-
-          elements.nextLevelBtn.textContent =
-            'Закончить игру';
-
-        }
-
-        else {
-
-          elements.nextLevelBtn.textContent =
-            'Дальше (→)';
-
-        }
-
-        return;
-
+          elements.levelTitle.textContent = currentLevel.name;
+          if (currentLevelIndex === LEVELS.length - 1) {
+            elements.nextLevelBtn.textContent = 'Закончить игру';
+          } else {
+            elements.nextLevelBtn.textContent = 'Дальше (→)';
+          }
+      } else if (gameMode === 'random') {
+          elements.levelTitle.textContent = 'Случайные задания';
+          elements.nextLevelBtn.textContent = 'Закончить игру';
+      } else if (gameMode === 'full_random') {
+          elements.levelTitle.textContent = 'Полный рандом';
+          elements.nextLevelBtn.textContent = 'Закончить игру';
       }
-
-
-      /* -------------------------
-         RANDOM
-      ------------------------- */
-
-      if (gameMode === 'random') {
-
-        elements.levelTitle.textContent =
-          'Случайные задания';
-
-        elements.nextLevelBtn.textContent =
-          'Закончить игру';
-
-        return;
-
-      }
-
-
-      /* -------------------------
-         FULL RANDOM
-      ------------------------- */
-
-      if (gameMode === 'fullRandom') {
-
-        elements.levelTitle.textContent =
-          'Полный рандом';
-
-        elements.nextLevelBtn.textContent =
-          'Закончить игру';
-
-      }
-
     }
 
-
-    /* =========================================================
-       1. CLASSIC MODE
-    ========================================================= */
-
+    // --- ЗАГРУЗКА ДАННЫХ ---
+    
+    // 1. CLASSIC MODE
     async function loadCurrentLevel() {
-
       stopTimer();
-
       elements.skipBtn.disabled = true;
-
-      isDataLoaded = false;
-
-      updateRecipientBadge(null);
-
-      elements.gifWrapper.innerHTML =
-        '<div class="message loading">Загрузка уровня...</div>';
-
-
+      elements.targetLabel.classList.remove('visible');
+      elements.gifWrapper.innerHTML = '<div class="message loading">Загрузка уровня...</div>';
+      
       try {
-
-        /*
-          Взаимный уровень
-        */
-
-        if (
-          currentLevel.type === 'mutual'
-        ) {
-
-          const response =
-            await fetch(
-              currentLevel.file
-            );
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              `${currentLevel.file} не найден`
-            );
-
-          }
-
-
-          tasksData =
-            await response.json();
-
-
+        if (currentLevel.type === 'mutual') {
+          const response = await fetch(currentLevel.file);
+          if (!response.ok) throw new Error(`${currentLevel.file} не найден`);
+          tasksData = await response.json();
           usedTasks = [];
-
-          totalTasks =
-            tasksData.length;
-
-
-          updateWheelUI();
-
-        }
-
-        /*
-          Обычный уровень
-        */
-
-        else {
-
-          const [
-            manData,
-            womanData
-          ] = await Promise.all([
-
-            fetch(
-              currentLevel.files[0]
-            ).then(r => {
-
-              if (!r.ok) {
-                throw new Error(
-                  `${currentLevel.files[0]} не найден`
-                );
-              }
-
-              return r.json();
-
-            }),
-
-            fetch(
-              currentLevel.files[1]
-            ).then(r => {
-
-              if (!r.ok) {
-                throw new Error(
-                  `${currentLevel.files[1]} не найден`
-                );
-              }
-
-              return r.json();
-
-            })
-
+          totalTasks = tasksData.length;
+          updateWheelUI('mutual');
+        } else {
+          const [manData, womanData] = await Promise.all([
+            fetch(currentLevel.files[0]).then(r => r.json()),
+            fetch(currentLevel.files[1]).then(r => r.json())
           ]);
-
-
-          tasksData = {
-            man: manData,
-            woman: womanData
-          };
-
-
+          tasksData = { man: manData, woman: womanData };
           usedTasks = [];
-
-
-          totalTasks =
-            manData.length +
-            womanData.length;
-
-
+          totalTasks = manData.length + womanData.length;
+          
           currentGenderIndex = 0;
-
-
-          updateWheelUI();
-
+          updateWheelUI('man');
         }
-
-
+        
         updateCounter();
-
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="message">
-            Уровень загружен!<br>
-            Крутите колесо.
-          </div>
-          `;
-
-
+        elements.gifWrapper.innerHTML = `<div class="message">Уровень загружен!<br>Крутите колесо.</div>`;
         checkGameStatus();
-
-
         isDataLoaded = true;
-
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка: ${error.message}</div>`;
       }
-
-      catch (error) {
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="error message">
-            ❌ Ошибка: ${error.message}
-          </div>
-          `;
-
-      }
-
     }
 
-
-    /* =========================================================
-       2. RANDOM MODE
-       Старый режим:
-       man -> woman -> mutual
-    ========================================================= */
-
+    // 2. RANDOM MODE (Существующий)
     async function loadRandomGame() {
-
       stopTimer();
-
       elements.skipBtn.disabled = true;
-
-      isDataLoaded = false;
-
-      updateRecipientBadge(null);
-
-      elements.gifWrapper.innerHTML =
-        `
-        <div class="message loading">
-          Сбор всех заданий...
-        </div>
-        `;
-
-
-      randomModeData = {
-        man: [],
-        woman: [],
-        mutual: []
-      };
-
-
+      elements.targetLabel.classList.remove('visible');
+      elements.gifWrapper.innerHTML = '<div class="message loading">Сбор всех заданий...</div>';
+      randomModeData = { man: [], woman: [], mutual: [] };
       usedTasks = [];
-
       noTimerUrls = new Set();
-
-
+      
       try {
-
-        const fetchPromises =
-          LEVELS.map(
-            async lvl => {
-
-              /*
-                Mutual
-              */
-
-              if (
-                lvl.type === 'mutual'
-              ) {
-
-                const res =
-                  await fetch(
-                    lvl.file
-                  );
-
-
-                if (res.ok) {
-
-                  const data =
-                    await res.json();
-
-
-                  randomModeData.mutual.push(
-                    ...data
-                  );
-
-
-                  if (lvl.noTimer) {
-
-                    data.forEach(url => {
-
-                      noTimerUrls.add(url);
-
-                    });
-
-                  }
-
-                }
-
-              }
-
-
-              /*
-                Separate
-              */
-
-              else {
-
-                const resMan =
-                  await fetch(
-                    lvl.files[0]
-                  );
-
-
-                if (resMan.ok) {
-
-                  const data =
-                    await resMan.json();
-
-
-                  randomModeData.man.push(
-                    ...data
-                  );
-
-
-                  if (lvl.noTimer) {
-
-                    data.forEach(url => {
-
-                      noTimerUrls.add(url);
-
-                    });
-
-                  }
-
-                }
-
-
-                const resWoman =
-                  await fetch(
-                    lvl.files[1]
-                  );
-
-
-                if (resWoman.ok) {
-
-                  const data =
-                    await resWoman.json();
-
-
-                  randomModeData.woman.push(
-                    ...data
-                  );
-
-
-                  if (lvl.noTimer) {
-
-                    data.forEach(url => {
-
-                      noTimerUrls.add(url);
-
-                    });
-
-                  }
-
-                }
-
-              }
-
+        const fetchPromises = LEVELS.map(async lvl => {
+          if (lvl.type === 'mutual') {
+            const res = await fetch(lvl.file);
+            if (res.ok) {
+                const data = await res.json();
+                randomModeData.mutual.push(...data);
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
             }
-          );
+          } else {
+            const resMan = await fetch(lvl.files[0]);
+            if (resMan.ok) {
+                const data = await resMan.json();
+                randomModeData.man.push(...data);
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
+            }
+            const resWoman = await fetch(lvl.files[1]);
+            if (resWoman.ok) {
+                const data = await resWoman.json();
+                randomModeData.woman.push(...data);
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
+            }
+          }
+        });
 
-
-        await Promise.all(
-          fetchPromises
-        );
-
-
-        totalTasks =
-          randomModeData.man.length +
-          randomModeData.woman.length +
-          randomModeData.mutual.length;
-
-
-        currentTurnType = 'man';
-
-
-        updateWheelUI();
-
+        await Promise.all(fetchPromises);
+        totalTasks = randomModeData.man.length + randomModeData.woman.length + randomModeData.mutual.length;
+        
+        currentTurnType = 'man'; 
+        updateWheelUI('man');
         updateCounter();
-
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="message">
-            Задания перемешаны!<br>
-            Крутите колесо.
-          </div>
-          `;
-
-
+        elements.gifWrapper.innerHTML = `<div class="message">Задания перемешаны!<br>Крутите колесо.</div>`;
         checkGameStatus();
-
-
         isDataLoaded = true;
-
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка загрузки: ${error.message}</div>`;
       }
-
-      catch (error) {
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="error message">
-            ❌ Ошибка загрузки: ${error.message}
-          </div>
-          `;
-
-      }
-
     }
 
-
-    /* =========================================================
-       3. FULL RANDOM MODE
-       
-       НОВАЯ ЛОГИКА
-
-       Здесь:
-       - нет очереди;
-       - нет очередности игроков;
-       - каждое задание берется из общего массива;
-       - после задания может сразу выпасть любое другое;
-       - уровень полностью игнорируется при выборе.
-    ========================================================= */
-
+    // 3. FULL RANDOM MODE (Новый)
     async function loadFullRandomGame() {
-
       stopTimer();
-
       elements.skipBtn.disabled = true;
-
-      isDataLoaded = false;
-
-      updateRecipientBadge(null);
-
-      elements.gifWrapper.innerHTML =
-        `
-        <div class="message loading">
-          Сбор всех заданий для полного рандома...
-        </div>
-        `;
-
-
-      fullRandomData = [];
-
-      usedFullRandomTasks = [];
-
+      elements.targetLabel.classList.remove('visible');
+      elements.gifWrapper.innerHTML = '<div class="message loading">Сбор всех заданий...</div>';
+      allFullRandomTasks = [];
+      usedTasks = [];
       noTimerUrls = new Set();
-
-
+      
       try {
-
-        for (
-          const lvl of LEVELS
-        ) {
-
-          /*
-            Взаимные задания
-          */
-
-          if (
-            lvl.type === 'mutual'
-          ) {
-
-            const response =
-              await fetch(
-                lvl.file
-              );
-
-
-            if (!response.ok) {
-              continue;
+        const fetchPromises = LEVELS.map(async lvl => {
+          if (lvl.type === 'mutual') {
+            const res = await fetch(lvl.file);
+            if (res.ok) {
+                const data = await res.json();
+                data.forEach(url => {
+                    allFullRandomTasks.push({ url, target: 'mutual' });
+                    if (lvl.noTimer) noTimerUrls.add(url);
+                });
             }
-
-
-            const data =
-              await response.json();
-
-
-            data.forEach(url => {
-
-              const task = {
-
-                url: url,
-
-                type: 'mutual',
-
-                noTimer: !!lvl.noTimer
-
-              };
-
-
-              fullRandomData.push(
-                task
-              );
-
-
-              if (lvl.noTimer) {
-                noTimerUrls.add(url);
-              }
-
-            });
-
+          } else {
+            const resMan = await fetch(lvl.files[0]);
+            if (resMan.ok) {
+                const data = await resMan.json();
+                data.forEach(url => {
+                    allFullRandomTasks.push({ url, target: 'man' });
+                    if (lvl.noTimer) noTimerUrls.add(url);
+                });
+            }
+            const resWoman = await fetch(lvl.files[1]);
+            if (resWoman.ok) {
+                const data = await resWoman.json();
+                data.forEach(url => {
+                    allFullRandomTasks.push({ url, target: 'woman' });
+                    if (lvl.noTimer) noTimerUrls.add(url);
+                });
+            }
           }
+        });
 
-
-          /*
-            Задания для мужчины
-          */
-
-          else {
-
-            const manResponse =
-              await fetch(
-                lvl.files[0]
-              );
-
-
-            if (manResponse.ok) {
-
-              const manData =
-                await manResponse.json();
-
-
-              manData.forEach(url => {
-
-                const task = {
-
-                  url: url,
-
-                  type: 'man',
-
-                  noTimer: !!lvl.noTimer
-
-                };
-
-
-                fullRandomData.push(
-                  task
-                );
-
-
-                if (lvl.noTimer) {
-                  noTimerUrls.add(url);
-                }
-
-              });
-
-            }
-
-
-            /*
-              Задания для женщины
-            */
-
-            const womanResponse =
-              await fetch(
-                lvl.files[1]
-              );
-
-
-            if (womanResponse.ok) {
-
-              const womanData =
-                await womanResponse.json();
-
-
-              womanData.forEach(url => {
-
-                const task = {
-
-                  url: url,
-
-                  type: 'woman',
-
-                  noTimer: !!lvl.noTimer
-
-                };
-
-
-                fullRandomData.push(
-                  task
-                );
-
-
-                if (lvl.noTimer) {
-                  noTimerUrls.add(url);
-                }
-
-              });
-
-            }
-
-          }
-
-        }
-
-
-        totalTasks =
-          fullRandomData.length;
-
-
-        updateWheelUI();
-
+        await Promise.all(fetchPromises);
+        totalTasks = allFullRandomTasks.length;
+        
+        updateWheelUI('full_random');
         updateCounter();
-
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="message">
-            Все задания собраны!<br>
-            Полный рандом активирован.<br>
-            Крутите колесо.
-          </div>
-          `;
-
-
+        elements.gifWrapper.innerHTML = `<div class="message">Полный рандом активирован!<br>Крутите колесо.</div>`;
         checkGameStatus();
-
-
         isDataLoaded = true;
-
-
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка загрузки: ${error.message}</div>`;
       }
-
-      catch (error) {
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="error message">
-            ❌ Ошибка загрузки: ${error.message}
-          </div>
-          `;
-
-      }
-
     }
 
-
-    /* =========================================================
-       RANDOM MODE:
-       ПОЛУЧЕНИЕ ДОСТУПНЫХ ЗАДАНИЙ
-    ========================================================= */
-
+    // --- ЛОГИКА ОЧЕРЕДИ RANDOM MODE ---
     function getNextRandomTurn(current) {
-
-      if (current === 'man') {
-        return 'woman';
-      }
-
-      if (current === 'woman') {
-        return 'mutual';
-      }
-
-      return 'man';
-
+        if (current === 'man') return 'woman';
+        if (current === 'woman') return 'mutual';
+        return 'man';
     }
-
 
     function getAvailableRandom(type) {
-
-      return randomModeData[type]
-        .filter(
-          task =>
-            !usedTasks.includes(task)
-        );
-
+        return randomModeData[type].filter(task => !usedTasks.includes(task));
     }
-
 
     function advanceTurnRandom() {
-
-      let next =
-        getNextRandomTurn(
-          currentTurnType
-        );
-
-
-      if (
-        getAvailableRandom(next).length === 0
-      ) {
-
-        next =
-          getNextRandomTurn(next);
-
-
-        if (
-          getAvailableRandom(next).length === 0
-        ) {
-
-          next =
-            getNextRandomTurn(next);
-
+        let next = getNextRandomTurn(currentTurnType);
+        if (getAvailableRandom(next).length === 0) {
+            next = getNextRandomTurn(next);
+            if (getAvailableRandom(next).length === 0) {
+                next = getNextRandomTurn(next);
+            }
         }
-
-      }
-
-
-      currentTurnType = next;
-
+        currentTurnType = next;
     }
 
-
-    /* =========================================================
-       ПОЛУЧЕНИЕ ЗАДАНИЯ
-       
-       Теперь все режимы возвращают:
-
-       {
-         url,
-         type,
-         noTimer
-       }
-    ========================================================= */
-
+    // --- ПОЛУЧЕНИЕ ЗАДАНИЯ ---
     function getRandomUnusedTask() {
-
-      /* =======================================================
-         CLASSIC
-      ======================================================= */
+      let availableTasks = [];
+      let selectedTask = null;
 
       if (gameMode === 'classic') {
-
-        let availableTasks = [];
-
-        let selectedTask = null;
-
-        let selectedType = null;
-
-
-        /*
-          Взаимный уровень
-        */
-
-        if (
-          currentLevel.type === 'mutual'
-        ) {
-
-          availableTasks =
-            tasksData.filter(
-              task =>
-                !usedTasks.includes(task)
-            );
-
-
-          if (
-            availableTasks.length === 0
-          ) {
-
-            return null;
-
+          if (currentLevel.type === 'mutual') {
+            availableTasks = tasksData.filter(task => !usedTasks.includes(task));
+          } else {
+            const gender = currentGenderIndex === 0 ? 'man' : 'woman';
+            availableTasks = tasksData[gender].filter(task => !usedTasks.includes(task));
           }
-
-
-          selectedTask =
-            availableTasks[
-              Math.floor(
-                Math.random() *
-                availableTasks.length
-              )
-            ];
-
-
-          selectedType = 'mutual';
-
-        }
-
-
-        /*
-          Обычный уровень
-        */
-
-        else {
-
-          const gender =
-            currentGenderIndex === 0
-              ? 'man'
-              : 'woman';
-
-
-          availableTasks =
-            tasksData[gender].filter(
-              task =>
-                !usedTasks.includes(task)
-            );
-
-
-          if (
-            availableTasks.length === 0
-          ) {
-
-            return null;
-
+          
+          if (availableTasks.length === 0) return null;
+          selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+          
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
+          
+          if (currentLevel.type !== 'mutual') {
+            currentGenderIndex = (currentGenderIndex + 1) % 2;
           }
-
-
-          selectedTask =
-            availableTasks[
-              Math.floor(
-                Math.random() *
-                availableTasks.length
-              )
-            ];
-
-
-          selectedType =
-            gender;
-
-
-          /*
-            Следующий игрок
-          */
-
-          currentGenderIndex =
-            (currentGenderIndex + 1) % 2;
-
-        }
-
-
-        usedTasks.push(
-          selectedTask
-        );
-
-
-        currentTask = {
-
-          url: selectedTask,
-
-          type: selectedType,
-
-          noTimer: !!currentLevel.noTimer
-
-        };
-
-
-        updateCounter();
-
-
-        return currentTask;
-
+      } else if (gameMode === 'random') {
+          availableTasks = getAvailableRandom(currentTurnType);
+          if (availableTasks.length === 0) return null;
+          
+          selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
+          
+          advanceTurnRandom();
+      } else if (gameMode === 'full_random') {
+          availableTasks = allFullRandomTasks.filter(t => !usedTasks.includes(t.url));
+          if (availableTasks.length === 0) return null;
+          
+          const taskObj = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+          selectedTask = taskObj.url;
+          currentTarget = taskObj.target;
+          
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
       }
-
-
-      /* =======================================================
-         RANDOM
-         Сохраняется старая очередность
-      ======================================================= */
-
-      if (gameMode === 'random') {
-
-        const availableTasks =
-          getAvailableRandom(
-            currentTurnType
-          );
-
-
-        if (
-          availableTasks.length === 0
-        ) {
-
-          return null;
-
-        }
-
-
-        const selectedTask =
-          availableTasks[
-            Math.floor(
-              Math.random() *
-              availableTasks.length
-            )
-          ];
-
-
-        const selectedType =
-          currentTurnType;
-
-
-        usedTasks.push(
-          selectedTask
-        );
-
-
-        currentTask = {
-
-          url: selectedTask,
-
-          type: selectedType,
-
-          noTimer:
-            noTimerUrls.has(
-              selectedTask
-            )
-
-        };
-
-
-        /*
-          Передвигаем очередность
-        */
-
-        advanceTurnRandom();
-
-
-        updateCounter();
-
-
-        return currentTask;
-
-      }
-
-
-      /* =======================================================
-         FULL RANDOM
-         
-         ЗДЕСЬ НЕТ advanceTurnRandom()
-
-         Любое задание из любого уровня
-         и любой категории может выпасть следующим.
-      ======================================================= */
-
-      if (gameMode === 'fullRandom') {
-
-        const availableTasks =
-          fullRandomData.filter(
-            task =>
-              !usedFullRandomTasks.includes(task)
-          );
-
-
-        if (
-          availableTasks.length === 0
-        ) {
-
-          return null;
-
-        }
-
-
-        const selectedTask =
-          availableTasks[
-            Math.floor(
-              Math.random() *
-              availableTasks.length
-            )
-          ];
-
-
-        usedFullRandomTasks.push(
-          selectedTask
-        );
-
-
-        currentTask =
-          selectedTask;
-
-
-        updateCounter();
-
-
-        return currentTask;
-
-      }
-
-
-      return null;
-
+      
+      updateCounter();
+      return selectedTask;
     }
 
-
-    /* =========================================================
-       ПРОВЕРКА СОСТОЯНИЯ ИГРЫ
-    ========================================================= */
-
+    // --- ИГРОВЫЕ ДЕЙСТВИЯ ---
     function checkGameStatus() {
-
-      let completed = false;
-
-
-      if (gameMode === 'fullRandom') {
-
-        completed =
-          usedFullRandomTasks.length >=
-            totalTasks &&
-          totalTasks > 0;
-
-      }
-
-      else {
-
-        completed =
-          usedTasks.length >=
-            totalTasks &&
-          totalTasks > 0;
-
-      }
-
-
-      if (completed) {
-
-        elements.wheelContainer.classList.add(
-          'disabled'
-        );
-
-
-        /*
-          CLASSIC
-        */
-
+      if (usedTasks.length >= totalTasks && totalTasks > 0) {
+        elements.wheelContainer.classList.add('disabled');
+        
         if (gameMode === 'classic') {
-
-          const nextBtnText =
-            currentLevelIndex ===
-            LEVELS.length - 1
-              ? 'Закончить игру'
-              : 'Следующий уровень (→)';
-
-
-          elements.gifWrapper.innerHTML =
-            `
-            <div class="message">
-
-              ✅ Уровень пройден!
-
-              <br>
-
-              <button
-                class="next-level-btn"
-                onclick="nextLevel()"
-                style="margin-top:20px;"
-              >
-                ${nextBtnText}
-              </button>
-
-            </div>
+            const nextBtnText = currentLevelIndex === LEVELS.length - 1 ? 'Закончить игру' : 'Следующий уровень (→)';
+            elements.gifWrapper.innerHTML = `
+              <div class="message">
+                ✅ Уровень пройден!<br>
+                <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
+                  ${nextBtnText}
+                </button>
+              </div>
             `;
-
-        }
-
-
-        /*
-          RANDOM / FULL RANDOM
-        */
-
-        else {
-
-          const finishText =
-            gameMode === 'fullRandom'
-              ? '🎉 Вы выполнили абсолютно все задания в полном рандоме!'
-              : '🎉 Вы выполнили абсолютно все задания!';
-
-
-          elements.gifWrapper.innerHTML =
-            `
-            <div class="message">
-
-              ${finishText}
-
-              <br>
-
-              <button
-                class="next-level-btn"
-                onclick="location.reload()"
-                style="margin-top:20px;"
-              >
-                В главное меню
-              </button>
-
-            </div>
+        } else {
+            elements.gifWrapper.innerHTML = `
+              <div class="message">
+                🎉 Вы выполнили абсолютно все задания!<br>
+                <button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">
+                  В главное меню
+                </button>
+              </div>
             `;
-
         }
-
-
         return false;
-
       }
-
-
-      elements.wheelContainer.classList.remove(
-        'disabled'
-      );
-
-
+      elements.wheelContainer.classList.remove('disabled');
       return true;
-
     }
 
-
-    /* =========================================================
-       ПОКАЗ ЗАДАНИЯ
-    ========================================================= */
-
-    function showGif(taskUrl, taskNoTimer = false) {
-
-      elements.gifWrapper.innerHTML =
-        '<div class="message loading">...</div>';
-
-
+    function showGif(taskUrl) {
+      elements.gifWrapper.innerHTML = '<div class="message loading">...</div>';
       const img = new Image();
-
-
       img.onload = () => {
-
         elements.gifWrapper.innerHTML = '';
-
         elements.gifWrapper.appendChild(img);
-
-
-        const canContinue =
-          checkGameStatus();
-
-
-        elements.skipBtn.disabled =
-          !canContinue;
-
-
-        if (canContinue) {
-
-          startTimer(
-            taskUrl,
-            taskNoTimer
-          );
-
-        }
-
-        else {
-
-          stopTimer();
-
-        }
-
+        checkGameStatus();
+        elements.skipBtn.disabled = false;
+        startTimer(taskUrl);
       };
-
-
       img.onerror = () => {
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="error message">
-            Ошибка картинки
-          </div>
-          `;
-
-
+        elements.gifWrapper.innerHTML = '<div class="error message">Ошибка картинки</div>';
         elements.skipBtn.disabled = true;
-
       };
-
-
       img.src = taskUrl;
-
     }
-
-
-    /* =========================================================
-       КРУТИТЬ КОЛЕСО
-    ========================================================= */
 
     function spinWheel() {
-
-      if (
-        !isGameStarted ||
-        isSpinning ||
-        elements.wheelContainer.classList.contains('disabled') ||
-        !isDataLoaded
-      ) {
-
-        return;
-
-      }
-
-
+      if (!isGameStarted || isSpinning || elements.wheelContainer.classList.contains('disabled') || !isDataLoaded) return;
+      
       unlockAudio();
-
-
-      stopTimer();
-
-
-      elements.skipBtn.disabled = true;
-
-
+      stopTimer(); 
+      elements.skipBtn.disabled = true; 
       isSpinning = true;
-
-
-      /*
-        Каждый спин полностью визуально одинаковый.
-        Колесо больше не связано с полом.
-      */
-
-      const spinAmount =
-        1800 +
-        Math.random() * 720;
-
-
-      rotationAngle +=
-        spinAmount;
-
-
-      elements.wheel.style.transform =
-        `rotate(${rotationAngle}deg)`;
-
+      
+      const spinAmount = 1800 + Math.random() * 720;
+      rotationAngle += spinAmount;
+      elements.wheel.style.transform = `rotate(${rotationAngle}deg)`;
 
       setTimeout(() => {
-
         isSpinning = false;
-
-
-        const task =
-          getRandomUnusedTask();
-
-
-        if (!task) {
-
-          checkGameStatus();
-
-          return;
-
+        
+        const taskUrl = getRandomUnusedTask();
+        
+        // Обновляем визуал после получения задания
+        if (gameMode === 'full_random') {
+            if (taskUrl) {
+                elements.targetLabel.classList.add('visible');
+                if (currentTarget === 'man') {
+                    elements.targetLabel.textContent = 'Для него';
+                    elements.targetLabel.style.background = 'var(--wheel-man)';
+                } else if (currentTarget === 'woman') {
+                    elements.targetLabel.textContent = 'Для нее';
+                    elements.targetLabel.style.background = 'var(--wheel-woman)';
+                } else {
+                    elements.targetLabel.textContent = 'Для двоих';
+                    elements.targetLabel.style.background = 'var(--wheel-mutual)';
+                }
+            }
+        } else {
+            elements.targetLabel.classList.remove('visible');
+            if (gameMode === 'classic') {
+                if (currentLevel.type !== 'mutual') {
+                  updateWheelUI(currentGenderIndex === 0 ? 'man' : 'woman');
+                }
+            } else if (gameMode === 'random') {
+                updateWheelUI(currentTurnType);
+            }
         }
-
-
-        /*
-          Главная новая логика:
-
-          после выбора показываем,
-          КОМУ выпало задание.
-        */
-
-        updateRecipientBadge(
-          task.type
-        );
-
-
-        showGif(
-          task.url,
-          task.noTimer
-        );
-
+        
+        if (taskUrl) showGif(taskUrl);
+        else checkGameStatus();
+        
       }, 2000);
-
     }
-
-
-    /* =========================================================
-       СЛЕДУЮЩИЙ УРОВЕНЬ / ЗАВЕРШЕНИЕ
-    ========================================================= */
 
     function nextLevel() {
-
-      if (!isGameStarted) {
-        return;
+      if (!isGameStarted) return;
+      
+      if (gameMode === 'random' || gameMode === 'full_random') {
+          stopTimer();
+          elements.wheelContainer.classList.add('disabled');
+          elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
+          return;
       }
 
-
-      /*
-        RANDOM / FULL RANDOM
-      */
-
-      if (
-        gameMode === 'random' ||
-        gameMode === 'fullRandom'
-      ) {
-
-        stopTimer();
-
-        elements.wheelContainer.classList.add(
-          'disabled'
-        );
-
-
-        const finishText =
-          gameMode === 'fullRandom'
-            ? '🎉 ПОЛНЫЙ РАНДОМ ЗАВЕРШЕН! 🎉'
-            : '🎉 ИГРА ЗАВЕРШЕНА! 🎉';
-
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="message">
-
-            ${finishText}
-
-            <br>
-
-            <button
-              class="next-level-btn"
-              onclick="location.reload()"
-              style="margin-top:20px;"
-            >
-              В главное меню
-            </button>
-
-          </div>
-          `;
-
-
-        return;
-
-      }
-
-
-      /*
-        CLASSIC
-      */
-
-      if (
-        currentLevelIndex <
-        LEVELS.length - 1
-      ) {
-
+      if (currentLevelIndex < LEVELS.length - 1) {
         currentLevelIndex++;
-
-        currentLevel =
-          LEVELS[
-            currentLevelIndex
-          ];
-
-
+        currentLevel = LEVELS[currentLevelIndex];
         loadCurrentLevel();
-
-
-        unlockAudio();
-
-      }
-
-      else {
-
+        unlockAudio(); 
+      } else {
         stopTimer();
-
-
-        elements.wheelContainer.classList.add(
-          'disabled'
-        );
-
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="message">
-
-            🎉 ИГРА ЗАВЕРШЕНА! 🎉
-
-            <br>
-
-            <button
-              class="next-level-btn"
-              onclick="location.reload()"
-              style="margin-top:20px;"
-            >
-              В главное меню
-            </button>
-
-          </div>
-          `;
-
+        elements.wheelContainer.classList.add('disabled');
+        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
       }
-
     }
-
-
-    /* =========================================================
-       ПРОПУСК ЗАДАНИЯ
-    ========================================================= */
 
     function skipTask() {
+        if (!isGameStarted || isSpinning || elements.skipBtn.disabled) return;
+        stopTimer(); 
 
-      if (
-        !isGameStarted ||
-        isSpinning ||
-        elements.skipBtn.disabled
-      ) {
-
-        return;
-
-      }
-
-
-      stopTimer();
-
-
-      /*
-        FULL RANDOM
-      */
-
-      if (gameMode === 'fullRandom') {
-
-        /*
-          Убираем последнее использованное задание.
-          Никакой очередности восстанавливать не нужно.
-        */
-
-        if (
-          usedFullRandomTasks.length > 0
-        ) {
-
-          usedFullRandomTasks.pop();
-
-        }
-
-
+        const skippedTask = usedTasks.pop();
         currentTask = null;
 
-
-        updateRecipientBadge(null);
+        if (gameMode === 'classic') {
+            if (currentLevel.type !== 'mutual') {
+                currentGenderIndex = (currentGenderIndex + 1) % 2; 
+                updateWheelUI(currentGenderIndex === 0 ? 'man' : 'woman');
+            }
+        } else if (gameMode === 'random') {
+            if (randomModeData.man.includes(skippedTask)) currentTurnType = 'man';
+            else if (randomModeData.woman.includes(skippedTask)) currentTurnType = 'woman';
+            else if (randomModeData.mutual.includes(skippedTask)) currentTurnType = 'mutual';
+            updateWheelUI(currentTurnType);
+        } else if (gameMode === 'full_random') {
+            elements.targetLabel.classList.remove('visible');
+        }
 
         updateCounter();
-
-
         elements.skipBtn.disabled = true;
-
-
-        elements.gifWrapper.innerHTML =
-          `
-          <div class="message">
-
-            🚫 Задание пропущено.
-
-            <br>
-
-            Крути снова!
-
-          </div>
-          `;
-
-
-        return;
-
-      }
-
-
-      /*
-        CLASSIC / RANDOM
-      */
-
-      const skippedTask =
-        usedTasks.pop();
-
-
-      currentTask = null;
-
-
-      /*
-        CLASSIC
-      */
-
-      if (gameMode === 'classic') {
-
-        if (
-          currentLevel.type !== 'mutual'
-        ) {
-
-          /*
-            getRandomUnusedTask()
-            уже переключил игрока на следующего.
-
-            Здесь возвращаем его обратно,
-            чтобы повторить пропущенное задание
-            на том же игроке.
-          */
-
-          currentGenderIndex =
-            (currentGenderIndex + 1) % 2;
-
-        }
-
-      }
-
-
-      /*
-        RANDOM
-      */
-
-      else {
-
-        if (
-          randomModeData.man.includes(
-            skippedTask
-          )
-        ) {
-
-          currentTurnType = 'man';
-
-        }
-
-        else if (
-          randomModeData.woman.includes(
-            skippedTask
-          )
-        ) {
-
-          currentTurnType = 'woman';
-
-        }
-
-        else if (
-          randomModeData.mutual.includes(
-            skippedTask
-          )
-        ) {
-
-          currentTurnType = 'mutual';
-
-        }
-
-      }
-
-
-      updateRecipientBadge(null);
-
-      updateCounter();
-
-
-      elements.skipBtn.disabled = true;
-
-
-      elements.gifWrapper.innerHTML =
-        `
-        <div class="message">
-
-          🚫 Задание пропущено.
-
-          <br>
-
-          Крути снова!
-
-        </div>
+        elements.gifWrapper.innerHTML = `
+            <div class="message">
+                🚫 Задание пропущено.<br>
+                Крути снова!
+            </div>
         `;
-
     }
 
+    // --- ОБРАБОТЧИКИ СОБЫТИЙ ---
+    elements.wheelContainer.onclick = spinWheel;
+    elements.wheelContainer.ontouchstart = (e) => { e.preventDefault(); spinWheel(); };
+    elements.nextLevelBtn.onclick = nextLevel;
+    elements.skipBtn.onclick = skipTask;
 
-    /* =========================================================
-       ОБРАБОТЧИКИ
-    ========================================================= */
-
-    elements.wheelContainer.onclick =
-      spinWheel;
-
-
-    elements.wheelContainer.ontouchstart =
-      (e) => {
-
-        e.preventDefault();
-
-        spinWheel();
-
-      };
-
-
-    elements.nextLevelBtn.onclick =
-      nextLevel;
-
-
-    elements.skipBtn.onclick =
-      skipTask;
-
-
-    /* =========================================================
-       КЛАВИАТУРА
-    ========================================================= */
-
-    document.addEventListener(
-      'keydown',
-      (event) => {
-
-        if (!isGameStarted) {
-          return;
-        }
-
-
-        /*
-          ПРОБЕЛ — КРУТИТЬ
-        */
+    document.addEventListener('keydown', (event) => {
+        if (!isGameStarted) return; 
 
         if (event.code === 'Space') {
-
-          event.preventDefault();
-
-          spinWheel();
-
+            event.preventDefault(); 
+            spinWheel();
         }
-
-
-        /*
-          СТРЕЛКА ВПРАВО — ДАЛЬШЕ
-        */
-
-        if (
-          event.code === 'ArrowRight'
-        ) {
-
-          nextLevel();
-
+        if (event.code === 'ArrowRight') {
+            nextLevel();
         }
-
-
-        /*
-          ENTER — ПРОПУСТИТЬ
-        */
-
         if (event.code === 'Enter') {
-
-          event.preventDefault();
-
-          skipTask();
-
+            event.preventDefault();
+            skipTask();
         }
-
-      }
-    );
-
+    });
   </script>
-
 </body>
 </html>
