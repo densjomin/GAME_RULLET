@@ -2624,3 +2624,468 @@
 
       };
 
+
+      img.src = taskUrl;
+
+    }
+
+
+    /* =========================================================
+       КРУТИТЬ КОЛЕСО
+    ========================================================= */
+
+    function spinWheel() {
+
+      if (
+        !isGameStarted ||
+        isSpinning ||
+        elements.wheelContainer.classList.contains('disabled') ||
+        !isDataLoaded
+      ) {
+
+        return;
+
+      }
+
+
+      unlockAudio();
+
+
+      stopTimer();
+
+
+      elements.skipBtn.disabled = true;
+
+
+      isSpinning = true;
+
+
+      /*
+        Каждый спин полностью визуально одинаковый.
+        Колесо больше не связано с полом.
+      */
+
+      const spinAmount =
+        1800 +
+        Math.random() * 720;
+
+
+      rotationAngle +=
+        spinAmount;
+
+
+      elements.wheel.style.transform =
+        `rotate(${rotationAngle}deg)`;
+
+
+      setTimeout(() => {
+
+        isSpinning = false;
+
+
+        const task =
+          getRandomUnusedTask();
+
+
+        if (!task) {
+
+          checkGameStatus();
+
+          return;
+
+        }
+
+
+        /*
+          Главная новая логика:
+
+          после выбора показываем,
+          КОМУ выпало задание.
+        */
+
+        updateRecipientBadge(
+          task.type
+        );
+
+
+        showGif(
+          task.url,
+          task.noTimer
+        );
+
+      }, 2000);
+
+    }
+
+
+    /* =========================================================
+       СЛЕДУЮЩИЙ УРОВЕНЬ / ЗАВЕРШЕНИЕ
+    ========================================================= */
+
+    function nextLevel() {
+
+      if (!isGameStarted) {
+        return;
+      }
+
+
+      /*
+        RANDOM / FULL RANDOM
+      */
+
+      if (
+        gameMode === 'random' ||
+        gameMode === 'fullRandom'
+      ) {
+
+        stopTimer();
+
+        elements.wheelContainer.classList.add(
+          'disabled'
+        );
+
+
+        const finishText =
+          gameMode === 'fullRandom'
+            ? '🎉 ПОЛНЫЙ РАНДОМ ЗАВЕРШЕН! 🎉'
+            : '🎉 ИГРА ЗАВЕРШЕНА! 🎉';
+
+
+        elements.gifWrapper.innerHTML =
+          `
+          <div class="message">
+
+            ${finishText}
+
+            <br>
+
+            <button
+              class="next-level-btn"
+              onclick="location.reload()"
+              style="margin-top:20px;"
+            >
+              В главное меню
+            </button>
+
+          </div>
+          `;
+
+
+        return;
+
+      }
+
+
+      /*
+        CLASSIC
+      */
+
+      if (
+        currentLevelIndex <
+        LEVELS.length - 1
+      ) {
+
+        currentLevelIndex++;
+
+        currentLevel =
+          LEVELS[
+            currentLevelIndex
+          ];
+
+
+        loadCurrentLevel();
+
+
+        unlockAudio();
+
+      }
+
+      else {
+
+        stopTimer();
+
+
+        elements.wheelContainer.classList.add(
+          'disabled'
+        );
+
+
+        elements.gifWrapper.innerHTML =
+          `
+          <div class="message">
+
+            🎉 ИГРА ЗАВЕРШЕНА! 🎉
+
+            <br>
+
+            <button
+              class="next-level-btn"
+              onclick="location.reload()"
+              style="margin-top:20px;"
+            >
+              В главное меню
+            </button>
+
+          </div>
+          `;
+
+      }
+
+    }
+
+
+    /* =========================================================
+       ПРОПУСК ЗАДАНИЯ
+    ========================================================= */
+
+    function skipTask() {
+
+      if (
+        !isGameStarted ||
+        isSpinning ||
+        elements.skipBtn.disabled
+      ) {
+
+        return;
+
+      }
+
+
+      stopTimer();
+
+
+      /*
+        FULL RANDOM
+      */
+
+      if (gameMode === 'fullRandom') {
+
+        /*
+          Убираем последнее использованное задание.
+          Никакой очередности восстанавливать не нужно.
+        */
+
+        if (
+          usedFullRandomTasks.length > 0
+        ) {
+
+          usedFullRandomTasks.pop();
+
+        }
+
+
+        currentTask = null;
+
+
+        updateRecipientBadge(null);
+
+        updateCounter();
+
+
+        elements.skipBtn.disabled = true;
+
+
+        elements.gifWrapper.innerHTML =
+          `
+          <div class="message">
+
+            🚫 Задание пропущено.
+
+            <br>
+
+            Крути снова!
+
+          </div>
+          `;
+
+
+        return;
+
+      }
+
+
+      /*
+        CLASSIC / RANDOM
+      */
+
+      const skippedTask =
+        usedTasks.pop();
+
+
+      currentTask = null;
+
+
+      /*
+        CLASSIC
+      */
+
+      if (gameMode === 'classic') {
+
+        if (
+          currentLevel.type !== 'mutual'
+        ) {
+
+          /*
+            getRandomUnusedTask()
+            уже переключил игрока на следующего.
+
+            Здесь возвращаем его обратно,
+            чтобы повторить пропущенное задание
+            на том же игроке.
+          */
+
+          currentGenderIndex =
+            (currentGenderIndex + 1) % 2;
+
+        }
+
+      }
+
+
+      /*
+        RANDOM
+      */
+
+      else {
+
+        if (
+          randomModeData.man.includes(
+            skippedTask
+          )
+        ) {
+
+          currentTurnType = 'man';
+
+        }
+
+        else if (
+          randomModeData.woman.includes(
+            skippedTask
+          )
+        ) {
+
+          currentTurnType = 'woman';
+
+        }
+
+        else if (
+          randomModeData.mutual.includes(
+            skippedTask
+          )
+        ) {
+
+          currentTurnType = 'mutual';
+
+        }
+
+      }
+
+
+      updateRecipientBadge(null);
+
+      updateCounter();
+
+
+      elements.skipBtn.disabled = true;
+
+
+      elements.gifWrapper.innerHTML =
+        `
+        <div class="message">
+
+          🚫 Задание пропущено.
+
+          <br>
+
+          Крути снова!
+
+        </div>
+        `;
+
+    }
+
+
+    /* =========================================================
+       ОБРАБОТЧИКИ
+    ========================================================= */
+
+    elements.wheelContainer.onclick =
+      spinWheel;
+
+
+    elements.wheelContainer.ontouchstart =
+      (e) => {
+
+        e.preventDefault();
+
+        spinWheel();
+
+      };
+
+
+    elements.nextLevelBtn.onclick =
+      nextLevel;
+
+
+    elements.skipBtn.onclick =
+      skipTask;
+
+
+    /* =========================================================
+       КЛАВИАТУРА
+    ========================================================= */
+
+    document.addEventListener(
+      'keydown',
+      (event) => {
+
+        if (!isGameStarted) {
+          return;
+        }
+
+
+        /*
+          ПРОБЕЛ — КРУТИТЬ
+        */
+
+        if (event.code === 'Space') {
+
+          event.preventDefault();
+
+          spinWheel();
+
+        }
+
+
+        /*
+          СТРЕЛКА ВПРАВО — ДАЛЬШЕ
+        */
+
+        if (
+          event.code === 'ArrowRight'
+        ) {
+
+          nextLevel();
+
+        }
+
+
+        /*
+          ENTER — ПРОПУСТИТЬ
+        */
+
+        if (event.code === 'Enter') {
+
+          event.preventDefault();
+
+          skipTask();
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
