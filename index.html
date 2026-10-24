@@ -149,6 +149,24 @@
       box-shadow: 0 6px 20px rgba(225, 29, 72, 0.6);
     }
 
+    .sex-mode-btn {
+      background: #db2777;
+      box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+    }
+    .sex-mode-btn:hover {
+      background: #be185d;
+      box-shadow: 0 6px 20px rgba(219, 39, 119, 0.6);
+    }
+
+    .orgazm-mode-btn {
+      background: #3b82f6;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+    .orgazm-mode-btn:hover {
+      background: #2563eb;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    }
+
     /* ---------------------- */
 
     .main-content {
@@ -203,36 +221,39 @@
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
 
-    /* Новые стили для дополнительных блоков режимов */
-    .extra-modes-container {
+    /* Стили для мини-переключателей над плашкой заголовка */
+    .top-submodes-container {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       width: 100%;
+      margin-bottom: 4px;
     }
 
-    .extra-mode-btn {
+    .submode-tab {
       flex: 1;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 14px;
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #aaa;
+      padding: 6px 4px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
       text-align: center;
+      transition: all 0.2s;
+      outline: none;
     }
 
-    .extra-mode-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+    .submode-tab:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
     }
 
-    .extra-mode-btn.active {
+    .submode-tab.active {
       background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
     }
 
     .level-header {
@@ -249,12 +270,12 @@
       padding: 10px 16px;
       border-radius: 12px;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 14px;
       flex: 1;
       text-align: center;
       box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
-      white-space: pre-line;
       line-height: 1.2;
+      white-space: pre-line;
     }
 
     .next-level-btn {
@@ -307,7 +328,7 @@
         max-width: 140px;
         text-align: center;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        visibility: hidden;
+        visibility: hidden; 
     }
 
     .target-label.visible {
@@ -401,6 +422,14 @@
       background: radial-gradient(circle, #f43f5e, #be123c); 
       box-shadow: 0 0 15px rgba(244, 63, 94, 0.6); 
     }
+    .wheel.sex-wheel {
+      background: radial-gradient(circle, #db2777, #831843);
+      box-shadow: 0 0 15px rgba(219, 39, 119, 0.6);
+    }
+    .wheel.orgazm-wheel {
+      background: radial-gradient(circle, #3b82f6, #1e40af);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+    }
 
     .gender-icon {
       position: absolute;
@@ -447,26 +476,26 @@
         background: var(--card);
         padding: 20px 40px;
         border-radius: 24px;
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        flex-direction: column; 
+        flex-direction: row; 
         align-items: center;
       }
 
-      .level-header { width: 100%; flex: 1; }
+      .level-header { width: auto; flex: 1; }
       
       .wheel-section {
-        width: 100%;
+        width: auto;
         background: transparent;
         padding: 0;
         border-radius: 0;
         gap: 40px;
         flex: 1;
-        justify-content: space-between;
+        justify-content: flex-end;
       }
 
       .left-controls {
-          align-items: flex-start;
+          align-items: flex-end;
           flex: none;
       }
 
@@ -505,8 +534,18 @@
         </div>
         
         <div class="mode-item">
-          <button id="randomModeBtn" class="start-btn random-btn">Случайные задания</button>
-          <div class="mode-desc">Задания перемешаны по уровням, но выполняются по очереди.</div>
+          <button id="randomModeBtn" class="start-btn random-btn">Случайные задания no sex/no orgazm</button>
+          <div class="mode-desc">Задания перемешаны по уровням (без секса и оргазма), но выполняются по очереди.</div>
+        </div>
+
+        <div class="mode-item">
+          <button id="sexModeBtn" class="start-btn sex-mode-btn">SEX</button>
+          <div class="mode-desc">Выпадают только уровни секса.</div>
+        </div>
+
+        <div class="mode-item">
+          <button id="orgazmModeBtn" class="start-btn orgazm-mode-btn">Orgazm</button>
+          <div class="mode-desc">Выпадают только уровни оргазма.</div>
         </div>
         
         <div class="mode-item">
@@ -517,7 +556,7 @@
     </div>
   </div>
 
-  <!-- ОСНОВНАЯ ИГРА -->
+  <!-- ОСНОВНАЯ ИГРА (Скрыта по умолчанию) -->
   <div id="gameScreen" class="main-content" style="display: none;">
     <div class="result-card">
       <div class="gif-wrapper" id="gifWrapper">
@@ -526,15 +565,17 @@
     </div>
 
     <div class="controls-wrapper">
-      <!-- Дополнительные блоки SEX и Orgazm (отображаются в режиме Случайных заданий) -->
-      <div class="extra-modes-container" id="extraModesContainer" style="display: none;">
-        <button class="extra-mode-btn" id="sexModeBtn">SEX</button>
-        <button class="extra-mode-btn" id="orgazmModeBtn">Orgazm</button>
-      </div>
+      <div class="level-header" style="flex-direction: column; align-items: stretch;">
+        <!-- ДВА НЕЗАВИСИМЫХ БЛОКА (ВКЛАДКИ) НАД ПЛАШКОЙ НАЗВАНИЯ -->
+        <div class="top-submodes-container" id="topSubmodesContainer">
+          <button class="submode-tab" id="tabSex" onclick="switchSubmode('sex')">SEX</button>
+          <button class="submode-tab" id="tabOrgazm" onclick="switchSubmode('orgazm')">Orgazm</button>
+        </div>
 
-      <div class="level-header">
-        <div class="level-title" id="levelTitle">Загрузка...</div>
-        <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 12px;">
+          <div class="level-title" id="levelTitle">Загрузка...</div>
+          <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
+        </div>
       </div>
 
       <div class="wheel-section">
@@ -566,8 +607,7 @@
   <script>
     // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
     let isGameStarted = false;
-    let gameMode = 'classic'; // 'classic', 'random', 'full_random'
-    let randomSubMode = 'main'; // 'main', 'sex', 'orgazm'
+    let gameMode = 'classic'; // 'classic', 'random', 'sex', 'orgazm', 'full_random'
 
     const startScreen = document.getElementById('startScreen');
     const modeScreen = document.getElementById('modeScreen');
@@ -576,12 +616,15 @@
     const goToModesBtn = document.getElementById('goToModesBtn');
     const classicModeBtn = document.getElementById('classicModeBtn');
     const randomModeBtn = document.getElementById('randomModeBtn');
-    const fullRandomModeBtn = document.getElementById('fullRandomModeBtn');
-
-    const extraModesContainer = document.getElementById('extraModesContainer');
     const sexModeBtn = document.getElementById('sexModeBtn');
     const orgazmModeBtn = document.getElementById('orgazmModeBtn');
+    const fullRandomModeBtn = document.getElementById('fullRandomModeBtn');
 
+    const tabSex = document.getElementById('tabSex');
+    const tabOrgazm = document.getElementById('tabOrgazm');
+    const topSubmodesContainer = document.getElementById('topSubmodesContainer');
+
+    // Все уровни
     const LEVELS = [
       { name: 'Прелюдия в одежде', type: 'separate', files: ['1._Man_Prelude_v_odezde.json', '1.1_Woman_Prelude_v_odezde.json'] },
       { name: 'Ласки руками в одежде', type: 'separate', files: ['2._Man_Fingering_v_odezde.json', '2.1_Woman_Masturbation_v_odezde.json'] },
@@ -596,16 +639,27 @@
       { name: 'Оргазм', type: 'separate', files: ['11._Man_Orgazm.json', '11.1_Woman_Orgazm.json'], noTimer: true }
     ];
 
+    // Уровни без секса и оргазма для «Случайные задания no sex/no orgazm»
+    const LEVELS_NO_SEX_ORGAZM = LEVELS.slice(0, 9);
+
     // Переменные Classic режима
     let currentLevelIndex = 0;
     let currentLevel = LEVELS[0];
     let tasksData = {};
     let currentGenderIndex = 0; 
     
-    // Переменные Random режима
+    // Переменные Random режима (no sex / no orgazm)
     let randomModeData = { man: [], woman: [], mutual: [] };
     let currentTurnType = 'man'; 
     let noTimerUrls = new Set(); 
+
+    // Переменные SEX режима
+    let sexModeData = { man: [], woman: [] };
+    let sexTurnType = 'man';
+
+    // Переменные Orgazm режима
+    let orgazmModeData = { man: [], woman: [] };
+    let orgazmTurnType = 'man';
 
     // Переменные Full Random режима
     let allFullRandomTasks = [];
@@ -645,51 +699,44 @@
 
     classicModeBtn.addEventListener('click', () => {
       gameMode = 'classic';
-      extraModesContainer.style.display = 'none';
       startGameUI();
       loadCurrentLevel();
     });
 
     randomModeBtn.addEventListener('click', () => {
       gameMode = 'random';
-      randomSubMode = 'main';
-      extraModesContainer.style.display = 'flex';
-      updateExtraModeButtons();
       startGameUI();
       loadRandomGame();
+    });
+
+    sexModeBtn.addEventListener('click', () => {
+      gameMode = 'sex';
+      startGameUI();
+      loadSexGame();
+    });
+
+    orgazmModeBtn.addEventListener('click', () => {
+      gameMode = 'orgazm';
+      startGameUI();
+      loadOrgazmGame();
     });
 
     fullRandomModeBtn.addEventListener('click', () => {
       gameMode = 'full_random';
-      extraModesContainer.style.display = 'none';
       startGameUI();
       loadFullRandomGame();
     });
 
-    // Обработчики кнопок подрежимов (SEX и Orgazm)
-    sexModeBtn.addEventListener('click', () => {
-      if (randomSubMode === 'sex') {
-        randomSubMode = 'main';
-      } else {
-        randomSubMode = 'sex';
+    // Функция переключения через верхние вкладки (SEX / Orgazm) прямо во время игры
+    function switchSubmode(subMode) {
+      if (!isGameStarted || isSpinning) return;
+      if (subMode === 'sex') {
+        gameMode = 'sex';
+        loadSexGame();
+      } else if (subMode === 'orgazm') {
+        gameMode = 'orgazm';
+        loadOrgazmGame();
       }
-      updateExtraModeButtons();
-      loadRandomGame();
-    });
-
-    orgazmModeBtn.addEventListener('click', () => {
-      if (randomSubMode === 'orgazm') {
-        randomSubMode = 'main';
-      } else {
-        randomSubMode = 'orgazm';
-      }
-      updateExtraModeButtons();
-      loadRandomGame();
-    });
-
-    function updateExtraModeButtons() {
-      sexModeBtn.classList.toggle('active', randomSubMode === 'sex');
-      orgazmModeBtn.classList.toggle('active', randomSubMode === 'orgazm');
     }
 
     function startGameUI() {
@@ -736,6 +783,7 @@
 
     function startTimer(taskUrl) {
         const isNoTimer = (gameMode === 'classic' && currentLevel.noTimer) || 
+                          (gameMode === 'orgazm') ||
                           ((gameMode === 'random' || gameMode === 'full_random') && noTimerUrls.has(taskUrl));
 
         if (isNoTimer) {
@@ -784,6 +832,14 @@
             elements.genderIcon.textContent = '🔥';
             elements.genderIcon.className = 'gender-icon';
             elements.wheel.className = 'wheel full-random';
+        } else if (type === 'sex') {
+            elements.genderIcon.textContent = '🔥';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel sex-wheel';
+        } else if (type === 'orgazm') {
+            elements.genderIcon.textContent = '⚡';
+            elements.genderIcon.className = 'gender-icon';
+            elements.wheel.className = 'wheel orgazm-wheel';
         }
     }
 
@@ -791,6 +847,15 @@
       elements.taskCount.textContent = usedTasks.length;
       elements.totalTasks.textContent = totalTasks;
       
+      // Управляем видимостью двух верхних блоков (SEX / Orgazm)
+      if (gameMode === 'sex' || gameMode === 'orgazm') {
+          topSubmodesContainer.style.display = 'flex';
+          tabSex.classList.toggle('active', gameMode === 'sex');
+          tabOrgazm.classList.toggle('active', gameMode === 'orgazm');
+      } else {
+          topSubmodesContainer.style.display = 'none';
+      }
+
       if (gameMode === 'classic') {
           elements.levelTitle.textContent = currentLevel.name;
           if (currentLevelIndex === LEVELS.length - 1) {
@@ -799,13 +864,13 @@
             elements.nextLevelBtn.textContent = 'Дальше (→)';
           }
       } else if (gameMode === 'random') {
-          if (randomSubMode === 'sex') {
-            elements.levelTitle.textContent = 'SEX';
-          } else if (randomSubMode === 'orgazm') {
-            elements.levelTitle.textContent = 'Orgazm';
-          } else {
-            elements.levelTitle.textContent = 'Случайные задания\nno sex/no orgazm';
-          }
+          elements.levelTitle.textContent = 'Случайные задания\nno sex/no orgazm';
+          elements.nextLevelBtn.textContent = 'Закончить игру';
+      } else if (gameMode === 'sex') {
+          elements.levelTitle.textContent = 'SEX';
+          elements.nextLevelBtn.textContent = 'Закончить игру';
+      } else if (gameMode === 'orgazm') {
+          elements.levelTitle.textContent = 'Orgazm';
           elements.nextLevelBtn.textContent = 'Закончить игру';
       } else if (gameMode === 'full_random') {
           elements.levelTitle.textContent = 'Полный рандом';
@@ -852,30 +917,18 @@
       }
     }
 
-    // 2. RANDOM MODE
+    // 2. RANDOM MODE («Случайные задания no sex/no orgazm»)
     async function loadRandomGame() {
       stopTimer();
       elements.skipBtn.disabled = true;
       elements.targetLabel.classList.remove('visible');
-      elements.gifWrapper.innerHTML = '<div class="message loading">Сбор заданий...</div>';
+      elements.gifWrapper.innerHTML = '<div class="message loading">Сбор всех заданий...</div>';
       randomModeData = { man: [], woman: [], mutual: [] };
       usedTasks = [];
       noTimerUrls = new Set();
       
       try {
-        // Фильтрация уровней по выбранному режиму/подрежиму
-        const targetLevels = LEVELS.filter(lvl => {
-          if (randomSubMode === 'sex') {
-            return lvl.name === 'Секс';
-          } else if (randomSubMode === 'orgazm') {
-            return lvl.name === 'Оргазм';
-          } else {
-            // Режим «no sex / no orgazm» — исключаем уровни "Секс" и "Оргазм"
-            return lvl.name !== 'Секс' && lvl.name !== 'Оргазм';
-          }
-        });
-
-        const fetchPromises = targetLevels.map(async lvl => {
+        const fetchPromises = LEVELS_NO_SEX_ORGAZM.map(async lvl => {
           if (lvl.type === 'mutual') {
             const res = await fetch(lvl.file);
             if (res.ok) {
@@ -905,7 +958,7 @@
         currentTurnType = 'man'; 
         updateWheelUI('man');
         updateCounter();
-        elements.gifWrapper.innerHTML = `<div class="message">Задания загружены!<br>Крутите колесо.</div>`;
+        elements.gifWrapper.innerHTML = `<div class="message">Задания перемешаны!<br>Крутите колесо.</div>`;
         checkGameStatus();
         isDataLoaded = true;
       } catch (error) {
@@ -913,7 +966,63 @@
       }
     }
 
-    // 3. FULL RANDOM MODE
+    // 3. SEX MODE (Блок «SEX»)
+    async function loadSexGame() {
+      stopTimer();
+      elements.skipBtn.disabled = true;
+      elements.targetLabel.classList.remove('visible');
+      elements.gifWrapper.innerHTML = '<div class="message loading">Загрузка заданий SEX...</div>';
+      sexModeData = { man: [], woman: [] };
+      usedTasks = [];
+      
+      try {
+        const [manData, womanData] = await Promise.all([
+          fetch('10._Man_Sex.json').then(r => r.json()),
+          fetch('10.1_Womam_Sex.json').then(r => r.json())
+        ]);
+        sexModeData = { man: manData, woman: womanData };
+        totalTasks = manData.length + womanData.length;
+        sexTurnType = 'man';
+        
+        updateWheelUI('sex');
+        updateCounter();
+        elements.gifWrapper.innerHTML = `<div class="message">Режим SEX активен!<br>Крутите колесо.</div>`;
+        checkGameStatus();
+        isDataLoaded = true;
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка загрузки SEX: ${error.message}</div>`;
+      }
+    }
+
+    // 4. ORGAZM MODE (Блок «Orgazm»)
+    async function loadOrgazmGame() {
+      stopTimer();
+      elements.skipBtn.disabled = true;
+      elements.targetLabel.classList.remove('visible');
+      elements.gifWrapper.innerHTML = '<div class="message loading">Загрузка заданий Orgazm...</div>';
+      orgazmModeData = { man: [], woman: [] };
+      usedTasks = [];
+      
+      try {
+        const [manData, womanData] = await Promise.all([
+          fetch('11._Man_Orgazm.json').then(r => r.json()),
+          fetch('11.1_Woman_Orgazm.json').then(r => r.json())
+        ]);
+        orgazmModeData = { man: manData, woman: womanData };
+        totalTasks = manData.length + womanData.length;
+        orgazmTurnType = 'man';
+        
+        updateWheelUI('orgazm');
+        updateCounter();
+        elements.gifWrapper.innerHTML = `<div class="message">Режим Orgazm активен!<br>Крутите колесо.</div>`;
+        checkGameStatus();
+        isDataLoaded = true;
+      } catch (error) {
+        elements.gifWrapper.innerHTML = `<div class="error message">❌ Ошибка загрузки Orgazm: ${error.message}</div>`;
+      }
+    }
+
+    // 5. FULL RANDOM MODE
     async function loadFullRandomGame() {
       stopTimer();
       elements.skipBtn.disabled = true;
@@ -1020,6 +1129,32 @@
           currentTask = selectedTask;
           
           advanceTurnRandom();
+      } else if (gameMode === 'sex') {
+          const availableSex = sexModeData[sexTurnType].filter(t => !usedTasks.includes(t));
+          if (availableSex.length === 0) {
+              sexTurnType = sexTurnType === 'man' ? 'woman' : 'man';
+              const altSex = sexModeData[sexTurnType].filter(t => !usedTasks.includes(t));
+              if (altSex.length === 0) return null;
+              selectedTask = altSex[Math.floor(Math.random() * altSex.length)];
+          } else {
+              selectedTask = availableSex[Math.floor(Math.random() * availableSex.length)];
+          }
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
+          sexTurnType = sexTurnType === 'man' ? 'woman' : 'man';
+      } else if (gameMode === 'orgazm') {
+          const availableOrg = orgazmModeData[orgazmTurnType].filter(t => !usedTasks.includes(t));
+          if (availableOrg.length === 0) {
+              orgazmTurnType = orgazmTurnType === 'man' ? 'woman' : 'man';
+              const altOrg = orgazmModeData[orgazmTurnType].filter(t => !usedTasks.includes(t));
+              if (altOrg.length === 0) return null;
+              selectedTask = altOrg[Math.floor(Math.random() * altOrg.length)];
+          } else {
+              selectedTask = availableOrg[Math.floor(Math.random() * availableOrg.length)];
+          }
+          usedTasks.push(selectedTask);
+          currentTask = selectedTask;
+          orgazmTurnType = orgazmTurnType === 'man' ? 'woman' : 'man';
       } else if (gameMode === 'full_random') {
           availableTasks = allFullRandomTasks.filter(t => !usedTasks.includes(t.url));
           if (availableTasks.length === 0) return null;
@@ -1054,7 +1189,7 @@
         } else {
             elements.gifWrapper.innerHTML = `
               <div class="message">
-                🎉 Вы выполнили абсолютно все задания!<br>
+                🎉 Вы выполнили абсолютно все задания этого режима!<br>
                 <button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">
                   В главное меню
                 </button>
@@ -1115,6 +1250,12 @@
                     elements.targetLabel.style.background = 'var(--wheel-mutual)';
                 }
             }
+        } else if (gameMode === 'sex') {
+            elements.targetLabel.classList.remove('visible');
+            updateWheelUI('sex');
+        } else if (gameMode === 'orgazm') {
+            elements.targetLabel.classList.remove('visible');
+            updateWheelUI('orgazm');
         } else {
             elements.targetLabel.classList.remove('visible');
             if (gameMode === 'classic') {
@@ -1135,7 +1276,7 @@
     function nextLevel() {
       if (!isGameStarted) return;
       
-      if (gameMode === 'random' || gameMode === 'full_random') {
+      if (gameMode === 'random' || gameMode === 'sex' || gameMode === 'orgazm' || gameMode === 'full_random') {
           stopTimer();
           elements.wheelContainer.classList.add('disabled');
           elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
@@ -1171,6 +1312,12 @@
             else if (randomModeData.woman.includes(skippedTask)) currentTurnType = 'woman';
             else if (randomModeData.mutual.includes(skippedTask)) currentTurnType = 'mutual';
             updateWheelUI(currentTurnType);
+        } else if (gameMode === 'sex') {
+            sexTurnType = sexTurnType === 'man' ? 'woman' : 'man';
+            updateWheelUI('sex');
+        } else if (gameMode === 'orgazm') {
+            orgazmTurnType = orgazmTurnType === 'man' ? 'woman' : 'man';
+            updateWheelUI('orgazm');
         } else if (gameMode === 'full_random') {
             elements.targetLabel.classList.remove('visible');
         }
