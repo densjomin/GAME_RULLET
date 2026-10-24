@@ -277,7 +277,24 @@
       outline: none; 
     }
 
-    .next-level-btn:active { transform: scale(0.95); }
+    .menu-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+      outline: none;
+      flex: 1;
+      text-align: center;
+    }
+
+    .menu-btn:active, .next-level-btn:active { transform: scale(0.95); }
 
     .wheel-section {
       display: flex;
@@ -531,7 +548,7 @@
 
     <div class="controls-wrapper">
       
-      <!-- Блок из трех независимых кнопок над плашкой -->
+      <!-- Блок из трех независимых кнопок сверху -->
       <div id="randomSubmodesContainer" class="random-submodes-container" style="display: none;">
         <div class="submodes-row">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
@@ -541,7 +558,8 @@
       </div>
 
       <div class="level-header">
-        <div class="level-title" id="levelTitle">Загрузка...</div>
+        <!-- Вместо старой плашки теперь полноценная кнопка «В меню» -->
+        <button class="menu-btn" id="menuBtn">В меню</button>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
       </div>
 
@@ -585,6 +603,7 @@
     const classicModeBtn = document.getElementById('classicModeBtn');
     const randomModeBtn = document.getElementById('randomModeBtn');
     const fullRandomModeBtn = document.getElementById('fullRandomModeBtn');
+    const menuBtn = document.getElementById('menuBtn');
 
     const randomSubmodesContainer = document.getElementById('randomSubmodesContainer');
     const submodeNoSexBtn = document.getElementById('submodeNoSexBtn');
@@ -634,7 +653,6 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     const elements = {
-      levelTitle: document.getElementById('levelTitle'),
       nextLevelBtn: document.getElementById('nextLevelBtn'),
       taskCount: document.getElementById('taskCount'),
       totalTasks: document.getElementById('totalTasks'),
@@ -652,6 +670,16 @@
         startScreen.style.display = 'none';
         modeScreen.style.display = 'flex';
     });
+
+    // Функция возврата на экран выбора режимов
+    function goToModeSelection() {
+      stopTimer();
+      isGameStarted = false;
+      gameScreen.style.display = 'none';
+      modeScreen.style.display = 'flex';
+    }
+
+    menuBtn.addEventListener('click', goToModeSelection);
 
     classicModeBtn.addEventListener('click', () => {
       gameMode = 'classic';
@@ -801,18 +829,12 @@
       elements.totalTasks.textContent = totalTasks;
       
       if (gameMode === 'classic') {
-          elements.levelTitle.textContent = currentLevel.name;
           if (currentLevelIndex === LEVELS.length - 1) {
             elements.nextLevelBtn.textContent = 'Закончить игру';
           } else {
             elements.nextLevelBtn.textContent = 'Дальше (→)';
           }
-      } else if (gameMode === 'random') {
-          // Плашка НЕ переименовывается, всегда фиксированный текст
-          elements.levelTitle.textContent = 'Случайные задания\nno sex/no orgazm';
-          elements.nextLevelBtn.textContent = 'Закончить игру';
-      } else if (gameMode === 'full_random') {
-          elements.levelTitle.textContent = 'Полный рандом';
+      } else if (gameMode === 'random' || gameMode === 'full_random') {
           elements.nextLevelBtn.textContent = 'Закончить игру';
       }
     }
@@ -866,14 +888,12 @@
       usedTasks = [];
       noTimerUrls = new Set();
       
-      // Выбираем уровни в зависимости от выбранной кнопки
       let targetLevels = [];
       if (randomSubmode === 'sex') {
         targetLevels = LEVELS.filter(lvl => lvl.id === '10');
       } else if (randomSubmode === 'orgasm') {
         targetLevels = LEVELS.filter(lvl => lvl.id === '11');
       } else {
-        // no sex / no orgasm (уровни 1-9)
         targetLevels = LEVELS.filter(lvl => lvl.id !== '10' && lvl.id !== '11');
       }
 
@@ -1061,7 +1081,7 @@
             elements.gifWrapper.innerHTML = `
               <div class="message">
                 🎉 Вы выполнили все задания в данном блоке!<br>
-                <button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">
+                <button class="next-level-btn" onclick="goToModeSelection()" style="margin-top:20px;">
                   В главное меню
                 </button>
               </div>
@@ -1144,7 +1164,7 @@
       if (gameMode === 'random' || gameMode === 'full_random') {
           stopTimer();
           elements.wheelContainer.classList.add('disabled');
-          elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
+          elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="goToModeSelection()" style="margin-top:20px;">В главное меню</button></div>`;
           return;
       }
 
@@ -1156,7 +1176,7 @@
       } else {
         stopTimer();
         elements.wheelContainer.classList.add('disabled');
-        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="location.reload()" style="margin-top:20px;">В главное меню</button></div>`;
+        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="goToModeSelection()" style="margin-top:20px;">В главное меню</button></div>`;
       }
     }
 
