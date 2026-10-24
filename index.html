@@ -548,7 +548,7 @@
 
     <div class="controls-wrapper">
       
-      <!-- Блок из трех независимых кнопок сверху -->
+      <!-- Блок из трех независимых кнопок сверху (только для режима случайных заданий) -->
       <div id="randomSubmodesContainer" class="random-submodes-container" style="display: none;">
         <div class="submodes-row">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
@@ -558,8 +558,10 @@
       </div>
 
       <div class="level-header">
-        <!-- Вместо старой плашки теперь полноценная кнопка «В меню» -->
-        <button class="menu-btn" id="menuBtn">В меню</button>
+        <!-- Контейнер плашки/кнопки динамически переключается в зависимости от режима -->
+        <div id="headerLeftContainer" style="flex: 1; display: flex;">
+          <div class="level-title" id="levelTitle">Загрузка...</div>
+        </div>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
       </div>
 
@@ -603,9 +605,10 @@
     const classicModeBtn = document.getElementById('classicModeBtn');
     const randomModeBtn = document.getElementById('randomModeBtn');
     const fullRandomModeBtn = document.getElementById('fullRandomModeBtn');
-    const menuBtn = document.getElementById('menuBtn');
 
     const randomSubmodesContainer = document.getElementById('randomSubmodesContainer');
+    const headerLeftContainer = document.getElementById('headerLeftContainer');
+    
     const submodeNoSexBtn = document.getElementById('submodeNoSexBtn');
     const submodeSexBtn = document.getElementById('submodeSexBtn');
     const submodeOrgasmBtn = document.getElementById('submodeOrgasmBtn');
@@ -653,6 +656,7 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     const elements = {
+      levelTitle: document.getElementById('levelTitle'),
       nextLevelBtn: document.getElementById('nextLevelBtn'),
       taskCount: document.getElementById('taskCount'),
       totalTasks: document.getElementById('totalTasks'),
@@ -679,11 +683,14 @@
       modeScreen.style.display = 'flex';
     }
 
-    menuBtn.addEventListener('click', goToModeSelection);
-
     classicModeBtn.addEventListener('click', () => {
       gameMode = 'classic';
       randomSubmodesContainer.style.display = 'none';
+      
+      // Возвращаем плашку уровня для классического режима
+      headerLeftContainer.innerHTML = '<div class="level-title" id="levelTitle">Загрузка...</div>';
+      elements.levelTitle = document.getElementById('levelTitle');
+      
       startGameUI();
       loadCurrentLevel();
     });
@@ -692,6 +699,11 @@
       gameMode = 'random';
       randomSubmode = 'nosex_noorgasm';
       randomSubmodesContainer.style.display = 'flex';
+      
+      // Меняем плашку на кнопку «В меню» только для случайных заданий
+      headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
+      document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
+
       updateSubmodeButtonsUI();
       startGameUI();
       loadRandomGame();
@@ -700,6 +712,11 @@
     fullRandomModeBtn.addEventListener('click', () => {
       gameMode = 'full_random';
       randomSubmodesContainer.style.display = 'none';
+      
+      // Возвращаем плашку для полного рандома
+      headerLeftContainer.innerHTML = '<div class="level-title" id="levelTitle">Загрузка...</div>';
+      elements.levelTitle = document.getElementById('levelTitle');
+
       startGameUI();
       loadFullRandomGame();
     });
@@ -829,12 +846,20 @@
       elements.totalTasks.textContent = totalTasks;
       
       if (gameMode === 'classic') {
+          if (elements.levelTitle) {
+              elements.levelTitle.textContent = currentLevel.name;
+          }
           if (currentLevelIndex === LEVELS.length - 1) {
             elements.nextLevelBtn.textContent = 'Закончить игру';
           } else {
             elements.nextLevelBtn.textContent = 'Дальше (→)';
           }
-      } else if (gameMode === 'random' || gameMode === 'full_random') {
+      } else if (gameMode === 'random') {
+          elements.nextLevelBtn.textContent = 'Закончить игру';
+      } else if (gameMode === 'full_random') {
+          if (elements.levelTitle) {
+              elements.levelTitle.textContent = 'Полный рандом';
+          }
           elements.nextLevelBtn.textContent = 'Закончить игру';
       }
     }
