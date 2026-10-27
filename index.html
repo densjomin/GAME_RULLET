@@ -203,7 +203,7 @@
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
 
-    /* Блок трех независимых кнопок или плашки верхнего уровня */
+    /* Блок управляющих элементов сверху */
     .random-submodes-container {
       display: flex;
       flex-direction: column;
@@ -550,19 +550,19 @@
 
     <div class="controls-wrapper">
       
-      <!-- Верхний контейнер: в Классическом режиме отображает название уровня, а в Случайных/Полном рандоме — 3 подрежима -->
-      <div id="randomSubmodesContainer" class="random-submodes-container" style="display: none;">
-        <div class="submodes-row" id="submodesRow">
+      <!-- Верхний блок: в Случайных/Полном рандоме это 3 кнопки подрежимов, в Классическом — плашка уровня -->
+      <div id="topHeaderContainer" class="random-submodes-container">
+        <div class="submodes-row" id="submodesRow" style="display: none;">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
           <button class="submode-btn" id="submodeSexBtn">SEX</button>
           <button class="submode-btn" id="submodeOrgasmBtn">Orgazm</button>
         </div>
+        <div class="level-title" id="levelTitle" style="width: 100%;">Загрузка...</div>
       </div>
 
+      <!-- Нижний блок кнопок управления: слева «В меню», справа «Дальше» / «Закончить игру» -->
       <div class="level-header">
-        <div id="headerLeftContainer" style="flex: 1; display: flex;">
-          <button class="menu-btn" id="menuBtn">В меню</button>
-        </div>
+        <button class="menu-btn" id="menuBtn">В меню</button>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
       </div>
 
@@ -608,11 +608,11 @@
 
     const randomSubmodesContainer = document.getElementById('randomSubmodesContainer');
     const submodesRow = document.getElementById('submodesRow');
-    const headerLeftContainer = document.getElementById('headerLeftContainer');
     
     const submodeNoSexBtn = document.getElementById('submodeNoSexBtn');
     const submodeSexBtn = document.getElementById('submodeSexBtn');
     const submodeOrgasmBtn = document.getElementById('submodeOrgasmBtn');
+    const menuBtn = document.getElementById('menuBtn');
 
     // Все уровни
     const LEVELS = [
@@ -687,28 +687,12 @@
       modeScreen.style.display = 'flex';
     }
 
+    menuBtn.addEventListener('click', goToModeSelection);
+
     classicModeBtn.addEventListener('click', () => {
       gameMode = 'classic';
-      
-      // В классическом режиме выше показываем плашку названия уровня
-      randomSubmodesContainer.style.display = 'flex';
       submodesRow.style.display = 'none';
-      
-      let titleElem = document.getElementById('classicLevelTitleAbove');
-      if (!titleElem) {
-        titleElem = document.createElement('div');
-        titleElem.className = 'level-title';
-        titleElem.id = 'classicLevelTitleAbove';
-        randomSubmodesContainer.appendChild(titleElem);
-      }
-      titleElem.style.display = 'block';
-
-      // Нижняя панель как в остальных режимах: Слева «В меню», Справа «Закончить игру»
-      headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
-      document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
-      
-      elements.nextLevelBtn.textContent = 'Дальше (→)';
-      
+      elements.levelTitle.style.display = 'block';
       startGameUI();
       loadCurrentLevel();
     });
@@ -716,17 +700,8 @@
     randomModeBtn.addEventListener('click', () => {
       gameMode = 'random';
       randomSubmode = 'nosex_noorgasm';
-      
-      // Включаем отображение 3 кнопок подрежимов сверху
-      randomSubmodesContainer.style.display = 'flex';
       submodesRow.style.display = 'flex';
-      const titleElem = document.getElementById('classicLevelTitleAbove');
-      if (titleElem) titleElem.style.display = 'none';
-
-      headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
-      document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
-      elements.nextLevelBtn.textContent = 'Закончить игру';
-
+      elements.levelTitle.style.display = 'none';
       updateSubmodeButtonsUI();
       startGameUI();
       loadRandomGame();
@@ -735,17 +710,8 @@
     fullRandomModeBtn.addEventListener('click', () => {
       gameMode = 'full_random';
       randomSubmode = 'nosex_noorgasm';
-      
-      // Включаем отображение 3 кнопок подрежимов сверху
-      randomSubmodesContainer.style.display = 'flex';
       submodesRow.style.display = 'flex';
-      const titleElem = document.getElementById('classicLevelTitleAbove');
-      if (titleElem) titleElem.style.display = 'none';
-
-      headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
-      document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
-      elements.nextLevelBtn.textContent = 'Закончить игру';
-
+      elements.levelTitle.style.display = 'none';
       updateSubmodeButtonsUI();
       startGameUI();
       loadFullRandomGame();
@@ -879,16 +845,13 @@
       elements.totalTasks.textContent = totalTasks;
       
       if (gameMode === 'classic') {
-          const titleElem = document.getElementById('classicLevelTitleAbove');
-          if (titleElem) {
-              titleElem.textContent = currentLevel.name;
-          }
+          elements.levelTitle.textContent = currentLevel.name;
           if (currentLevelIndex === LEVELS.length - 1) {
             elements.nextLevelBtn.textContent = 'Закончить игру';
           } else {
             elements.nextLevelBtn.textContent = 'Дальше (→)';
           }
-      } else if (gameMode === 'random' || gameMode === 'full_random') {
+      } else {
           elements.nextLevelBtn.textContent = 'Закончить игру';
       }
     }
