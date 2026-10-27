@@ -560,7 +560,7 @@
         <div class="level-title" id="levelTitle" style="width: 100%;">Загрузка...</div>
       </div>
 
-      <!-- Нижний блок кнопок управления: слева «В меню», справа «Дальше» / «Закончить игру» -->
+      <!-- Нижний блок кнопок управления: слева «В меню», справа «Дальше» (в классике) -->
       <div class="level-header">
         <button class="menu-btn" id="menuBtn">В меню</button>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
@@ -693,6 +693,7 @@
       gameMode = 'classic';
       submodesRow.style.display = 'none';
       elements.levelTitle.style.display = 'block';
+      elements.nextLevelBtn.style.display = 'block';
       startGameUI();
       loadCurrentLevel();
     });
@@ -702,6 +703,7 @@
       randomSubmode = 'nosex_noorgasm';
       submodesRow.style.display = 'flex';
       elements.levelTitle.style.display = 'none';
+      elements.nextLevelBtn.style.display = 'none';
       updateSubmodeButtonsUI();
       startGameUI();
       loadRandomGame();
@@ -712,6 +714,7 @@
       randomSubmode = 'nosex_noorgasm';
       submodesRow.style.display = 'flex';
       elements.levelTitle.style.display = 'none';
+      elements.nextLevelBtn.style.display = 'none';
       updateSubmodeButtonsUI();
       startGameUI();
       loadFullRandomGame();
@@ -846,13 +849,7 @@
       
       if (gameMode === 'classic') {
           elements.levelTitle.textContent = currentLevel.name;
-          if (currentLevelIndex === LEVELS.length - 1) {
-            elements.nextLevelBtn.textContent = 'Закончить игру';
-          } else {
-            elements.nextLevelBtn.textContent = 'Дальше (→)';
-          }
-      } else {
-          elements.nextLevelBtn.textContent = 'Закончить игру';
+          elements.nextLevelBtn.textContent = 'Дальше (→)';
       }
     }
 
@@ -1126,20 +1123,30 @@
         elements.wheelContainer.classList.add('disabled');
         
         if (gameMode === 'classic') {
-            const nextBtnText = currentLevelIndex === LEVELS.length - 1 ? 'Закончить игру' : 'Следующий уровень (→)';
-            elements.gifWrapper.innerHTML = `
-              <div class="message">
-                ✅ Уровень пройден!<br>
-                <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
-                  ${nextBtnText}
-                </button>
-              </div>
-            `;
+            if (currentLevelIndex < LEVELS.length - 1) {
+              elements.gifWrapper.innerHTML = `
+                <div class="message">
+                  ✅ Уровень пройден!<br>
+                  <button class="next-level-btn" onclick="nextLevel()" style="margin-top:20px;">
+                    Следующий уровень (→)
+                  </button>
+                </div>
+              `;
+            } else {
+              elements.gifWrapper.innerHTML = `
+                <div class="message">
+                  🎉 Вы прошли все уровни!<br>
+                  <button class="menu-btn" onclick="goToModeSelection()" style="margin-top:20px;">
+                    В главное меню
+                  </button>
+                </div>
+              `;
+            }
         } else {
             elements.gifWrapper.innerHTML = `
               <div class="message">
                 🎉 Вы выполнили все задания в данном блоке!<br>
-                <button class="next-level-btn" onclick="goToModeSelection()" style="margin-top:20px;">
+                <button class="menu-btn" onclick="goToModeSelection()" style="margin-top:20px;">
                   В главное меню
                 </button>
               </div>
@@ -1222,14 +1229,7 @@
     }
 
     function nextLevel() {
-      if (!isGameStarted) return;
-      
-      if (gameMode === 'random' || gameMode === 'full_random') {
-          stopTimer();
-          elements.wheelContainer.classList.add('disabled');
-          elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="goToModeSelection()" style="margin-top:20px;">В главное меню</button></div>`;
-          return;
-      }
+      if (!isGameStarted || gameMode !== 'classic') return;
 
       if (currentLevelIndex < LEVELS.length - 1) {
         currentLevelIndex++;
@@ -1239,7 +1239,7 @@
       } else {
         stopTimer();
         elements.wheelContainer.classList.add('disabled');
-        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="next-level-btn" onclick="goToModeSelection()" style="margin-top:20px;">В главное меню</button></div>`;
+        elements.gifWrapper.innerHTML = `<div class="message">🎉 ИГРА ЗАВЕРШЕНА! 🎉<br><button class="menu-btn" onclick="goToModeSelection()" style="margin-top:20px;">В главное меню</button></div>`;
       }
     }
 
@@ -1293,7 +1293,7 @@
             event.preventDefault(); 
             spinWheel();
         }
-        if (event.code === 'ArrowRight') {
+        if (event.code === 'ArrowRight' && gameMode === 'classic') {
             nextLevel();
         }
         if (event.code === 'Enter') {
