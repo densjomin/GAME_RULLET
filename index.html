@@ -203,7 +203,7 @@
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
 
-    /* Блок трех независимых кнопок сверху */
+    /* Блок трех независимых кнопок или плашки верхнего уровня */
     .random-submodes-container {
       display: flex;
       flex-direction: column;
@@ -275,6 +275,8 @@
       white-space: nowrap;
       box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
       outline: none; 
+      flex: 1;
+      text-align: center;
     }
 
     .menu-btn {
@@ -548,9 +550,9 @@
 
     <div class="controls-wrapper">
       
-      <!-- Блок из трех независимых кнопок сверху -->
+      <!-- Верхний контейнер: в Классическом режиме отображает название уровня, а в Случайных/Полном рандоме — 3 подрежима -->
       <div id="randomSubmodesContainer" class="random-submodes-container" style="display: none;">
-        <div class="submodes-row">
+        <div class="submodes-row" id="submodesRow">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
           <button class="submode-btn" id="submodeSexBtn">SEX</button>
           <button class="submode-btn" id="submodeOrgasmBtn">Orgazm</button>
@@ -559,7 +561,7 @@
 
       <div class="level-header">
         <div id="headerLeftContainer" style="flex: 1; display: flex;">
-          <div class="level-title" id="levelTitle">Загрузка...</div>
+          <button class="menu-btn" id="menuBtn">В меню</button>
         </div>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
       </div>
@@ -605,6 +607,7 @@
     const fullRandomModeBtn = document.getElementById('fullRandomModeBtn');
 
     const randomSubmodesContainer = document.getElementById('randomSubmodesContainer');
+    const submodesRow = document.getElementById('submodesRow');
     const headerLeftContainer = document.getElementById('headerLeftContainer');
     
     const submodeNoSexBtn = document.getElementById('submodeNoSexBtn');
@@ -686,9 +689,26 @@
 
     classicModeBtn.addEventListener('click', () => {
       gameMode = 'classic';
-      randomSubmodesContainer.style.display = 'none';
-      headerLeftContainer.innerHTML = '<div class="level-title" id="levelTitle">Загрузка...</div>';
-      elements.levelTitle = document.getElementById('levelTitle');
+      
+      // В классическом режиме выше показываем плашку названия уровня
+      randomSubmodesContainer.style.display = 'flex';
+      submodesRow.style.display = 'none';
+      
+      let titleElem = document.getElementById('classicLevelTitleAbove');
+      if (!titleElem) {
+        titleElem = document.createElement('div');
+        titleElem.className = 'level-title';
+        titleElem.id = 'classicLevelTitleAbove';
+        randomSubmodesContainer.appendChild(titleElem);
+      }
+      titleElem.style.display = 'block';
+
+      // Нижняя панель как в остальных режимах: Слева «В меню», Справа «Закончить игру»
+      headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
+      document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
+      
+      elements.nextLevelBtn.textContent = 'Дальше (→)';
+      
       startGameUI();
       loadCurrentLevel();
     });
@@ -696,9 +716,17 @@
     randomModeBtn.addEventListener('click', () => {
       gameMode = 'random';
       randomSubmode = 'nosex_noorgasm';
+      
+      // Включаем отображение 3 кнопок подрежимов сверху
       randomSubmodesContainer.style.display = 'flex';
+      submodesRow.style.display = 'flex';
+      const titleElem = document.getElementById('classicLevelTitleAbove');
+      if (titleElem) titleElem.style.display = 'none';
+
       headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
       document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
+      elements.nextLevelBtn.textContent = 'Закончить игру';
+
       updateSubmodeButtonsUI();
       startGameUI();
       loadRandomGame();
@@ -707,9 +735,17 @@
     fullRandomModeBtn.addEventListener('click', () => {
       gameMode = 'full_random';
       randomSubmode = 'nosex_noorgasm';
+      
+      // Включаем отображение 3 кнопок подрежимов сверху
       randomSubmodesContainer.style.display = 'flex';
+      submodesRow.style.display = 'flex';
+      const titleElem = document.getElementById('classicLevelTitleAbove');
+      if (titleElem) titleElem.style.display = 'none';
+
       headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
       document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
+      elements.nextLevelBtn.textContent = 'Закончить игру';
+
       updateSubmodeButtonsUI();
       startGameUI();
       loadFullRandomGame();
@@ -843,8 +879,9 @@
       elements.totalTasks.textContent = totalTasks;
       
       if (gameMode === 'classic') {
-          if (elements.levelTitle) {
-              elements.levelTitle.textContent = currentLevel.name;
+          const titleElem = document.getElementById('classicLevelTitleAbove');
+          if (titleElem) {
+              titleElem.textContent = currentLevel.name;
           }
           if (currentLevelIndex === LEVELS.length - 1) {
             elements.nextLevelBtn.textContent = 'Закончить игру';
@@ -1102,7 +1139,6 @@
               currentTask = selectedTask;
               currentTarget = fullRandomOrgasmTurn;
 
-              // Переключаем очередность для отображения и следующего спина
               fullRandomOrgasmTurn = fullRandomOrgasmTurn === 'man' ? 'woman' : 'man';
           } else {
               availableTasks = allFullRandomTasks.filter(t => !usedTasks.includes(t.url));
@@ -1190,7 +1226,6 @@
             if (taskUrl) {
                 if (randomSubmode === 'orgasm') {
                     elements.targetLabel.classList.remove('visible');
-                    // Сразу обновляем иконку колеса на следующего игрока в очереди
                     updateWheelUI(fullRandomOrgasmTurn);
                 } else {
                     elements.targetLabel.classList.add('visible');
