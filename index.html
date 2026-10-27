@@ -345,6 +345,13 @@
     }
     .task-counter span { color: #fff; font-size: 16px; }
 
+    /* Блок таймера и тумблера */
+    .timer-container {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
     .timer-display {
         font-family: monospace;
         font-size: 24px;
@@ -359,6 +366,23 @@
         0% { opacity: 1; }
         50% { opacity: 0.5; }
         100% { opacity: 1; }
+    }
+
+    .timer-toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #aaa;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .timer-toggle-label input {
+        cursor: pointer;
+        accent-color: var(--accent);
+        width: 13px;
+        height: 13px;
     }
 
     .skip-btn {
@@ -471,7 +495,7 @@
         background: var(--card);
         padding: 20px 40px;
         border-radius: 24px;
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         flex-direction: column; 
         align-items: center;
@@ -550,7 +574,7 @@
 
     <div class="controls-wrapper">
       
-      <!-- Верхний блок: в Случайных/Полном рандоме это 3 кнопки подрежимов, в Классическом — плашка уровня -->
+      <!-- Верхний блок -->
       <div id="topHeaderContainer" class="random-submodes-container">
         <div class="submodes-row" id="submodesRow" style="display: none;">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
@@ -560,7 +584,7 @@
         <div class="level-title" id="levelTitle" style="width: 100%;">Загрузка...</div>
       </div>
 
-      <!-- Нижний блок кнопок управления: слева «В меню», справа «Дальше» (в классике) -->
+      <!-- Нижний блок кнопок управления -->
       <div class="level-header">
         <button class="menu-btn" id="menuBtn">В меню</button>
         <button class="next-level-btn" id="nextLevelBtn" title="Стрелка Вправо">Дальше (→)</button>
@@ -574,7 +598,13 @@
                 <div><span id="taskCount">0</span> / <span id="totalTasks">?</span></div>
             </div>
             
-            <div id="timerDisplay" class="timer-display">--:--</div>
+            <!-- Блок таймера и переключателя -->
+            <div class="timer-container">
+                <div id="timerDisplay" class="timer-display">--:--</div>
+                <label class="timer-toggle-label">
+                    <input type="checkbox" id="timerToggle" checked> Таймер
+                </label>
+            </div>
 
             <button class="skip-btn" id="skipBtn" disabled title="Enter">ПРОПУСТИТЬ</button>
         </div>
@@ -613,6 +643,7 @@
     const submodeSexBtn = document.getElementById('submodeSexBtn');
     const submodeOrgasmBtn = document.getElementById('submodeOrgasmBtn');
     const menuBtn = document.getElementById('menuBtn');
+    const timerToggle = document.getElementById('timerToggle');
 
     // Все уровни
     const LEVELS = [
@@ -684,7 +715,6 @@
       stopTimer();
       isGameStarted = false;
       
-      // Сброс прогресса классического режима при выходе в меню
       currentLevelIndex = 0;
       currentLevel = LEVELS[0];
       usedTasks = [];
@@ -700,7 +730,6 @@
       submodesRow.style.display = 'none';
       elements.levelTitle.style.display = 'block';
       
-      // Гарантируем сброс на 1-й уровень
       currentLevelIndex = 0;
       currentLevel = LEVELS[0];
       
@@ -801,6 +830,12 @@
     }
 
     function startTimer(taskUrl) {
+        // Если тумблер таймера выключен, ничего не запускаем
+        if (!timerToggle.checked) {
+            elements.timerDisplay.textContent = '';
+            return;
+        }
+
         const isNoTimer = (gameMode === 'classic' && currentLevel.noTimer) || 
                           ((gameMode === 'random' || gameMode === 'full_random') && noTimerUrls.has(taskUrl));
 
@@ -832,6 +867,20 @@
         elements.timerDisplay.textContent = `${m}:${s}`;
     }
 
+    // Обработка переключения чекбокса таймера на лету
+    timerToggle.addEventListener('change', () => {
+        if (!timerToggle.checked) {
+            stopTimer();
+            elements.timerDisplay.textContent = '';
+        } else {
+            if (currentTask) {
+                startTimer(currentTask);
+            } else {
+                elements.timerDisplay.textContent = '--:--';
+            }
+        }
+    });
+
     // --- ОБНОВЛЕНИЕ UI КОЛЕСА ---
     function updateWheelUI(type) {
         if (type === 'man') {
@@ -859,7 +908,6 @@
       
       if (gameMode === 'classic') {
           elements.levelTitle.textContent = currentLevel.name;
-          // Если текущий уровень — последний (Оргазм), скрываем кнопку «Дальше»
           if (currentLevelIndex >= LEVELS.length - 1) {
             elements.nextLevelBtn.style.display = 'none';
           } else {
@@ -902,6 +950,7 @@
         }
         
         updateCounter();
+        elements.timerDisplay.textContent = timerToggle.checked ? '--:--' : '';
         elements.gifWrapper.innerHTML = `<div class="message">Уровень загружен!<br>Крутите колесо.</div>`;
         checkGameStatus();
         isDataLoaded = true;
@@ -910,7 +959,7 @@
       }
     }
 
-    // 2. RANDOM MODE (С фильтрацией подрежимов)
+    // 2. RANDOM MODE
     async function loadRandomGame() {
       stopTimer();
       elements.skipBtn.disabled = true;
@@ -963,6 +1012,7 @@
 
         updateWheelUI(currentTurnType);
         updateCounter();
+        elements.timerDisplay.textContent = timerToggle.checked ? '--:--' : '';
         elements.gifWrapper.innerHTML = `<div class="message">Задания загружены!<br>Крутите колесо.</div>`;
         checkGameStatus();
         isDataLoaded = true;
@@ -1042,6 +1092,7 @@
         }
 
         updateCounter();
+        elements.timerDisplay.textContent = timerToggle.checked ? '--:--' : '';
         elements.gifWrapper.innerHTML = `<div class="message">Задания загружены!<br>Крутите колесо.</div>`;
         checkGameStatus();
         isDataLoaded = true;
