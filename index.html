@@ -548,7 +548,7 @@
 
     <div class="controls-wrapper">
       
-      <!-- Блок из трех независимых кнопок сверху (для режимов Случайные задания и Полный рандом) -->
+      <!-- Блок из трех независимых кнопок сверху -->
       <div id="randomSubmodesContainer" class="random-submodes-container" style="display: none;">
         <div class="submodes-row">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
@@ -558,7 +558,6 @@
       </div>
 
       <div class="level-header">
-        <!-- Контейнер плашки/кнопки динамически переключается в зависимости от режима -->
         <div id="headerLeftContainer" style="flex: 1; display: flex;">
           <div class="level-title" id="levelTitle">Загрузка...</div>
         </div>
@@ -567,7 +566,7 @@
 
       <div class="wheel-section">
         <div class="left-controls">
-            <!-- Плашка для Полного Рандома -->
+            <!-- Плашка для Полного Рандома (когда нет жесткой очереди) -->
             <div id="targetLabel" class="target-label">Для него</div>
 
             <div class="task-counter" id="taskCounter">
@@ -643,6 +642,10 @@
     let allFullRandomTasks = [];
     let currentTarget = null; 
 
+    // Очередь для оргазма в Full Random (раздельная по полу: man -> woman)
+    let fullRandomOrgasmData = { man: [], woman: [] };
+    let fullRandomOrgasmTurn = 'man';
+
     // Общие переменные
     let usedTasks = [];
     let totalTasks = 0;
@@ -675,7 +678,6 @@
         modeScreen.style.display = 'flex';
     });
 
-    // Функция возврата на экран выбора режимов
     function goToModeSelection() {
       stopTimer();
       isGameStarted = false;
@@ -686,11 +688,8 @@
     classicModeBtn.addEventListener('click', () => {
       gameMode = 'classic';
       randomSubmodesContainer.style.display = 'none';
-      
-      // Возвращаем плашку уровня для классического режима
       headerLeftContainer.innerHTML = '<div class="level-title" id="levelTitle">Загрузка...</div>';
       elements.levelTitle = document.getElementById('levelTitle');
-      
       startGameUI();
       loadCurrentLevel();
     });
@@ -699,11 +698,8 @@
       gameMode = 'random';
       randomSubmode = 'nosex_noorgasm';
       randomSubmodesContainer.style.display = 'flex';
-      
-      // Меняем плашку на кнопку «В меню»
       headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
       document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
-
       updateSubmodeButtonsUI();
       startGameUI();
       loadRandomGame();
@@ -713,11 +709,8 @@
       gameMode = 'full_random';
       randomSubmode = 'nosex_noorgasm';
       randomSubmodesContainer.style.display = 'flex';
-      
-      // Меняем плашку на кнопку «В меню» также и для полного рандома
       headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
       document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
-
       updateSubmodeButtonsUI();
       startGameUI();
       loadFullRandomGame();
@@ -964,13 +957,14 @@
       }
     }
 
-    // 3. FULL RANDOM MODE (С фильтрацией подрежимов)
+    // 3. FULL RANDOM MODE
     async function loadFullRandomGame() {
       stopTimer();
       elements.skipBtn.disabled = true;
       elements.targetLabel.classList.remove('visible');
       elements.gifWrapper.innerHTML = '<div class="message loading">Сбор всех заданий...</div>';
       allFullRandomTasks = [];
+      fullRandomOrgasmData = { man: [], woman: [] };
       usedTasks = [];
       noTimerUrls = new Set();
       
@@ -998,26 +992,41 @@
             const resMan = await fetch(lvl.files[0]);
             if (resMan.ok) {
                 const data = await resMan.json();
-                data.forEach(url => {
-                    allFullRandomTasks.push({ url, target: 'man' });
-                    if (lvl.noTimer) noTimerUrls.add(url);
-                });
+                if (lvl.id === '11') {
+                    fullRandomOrgasmData.man.push(...data);
+                } else {
+                    data.forEach(url => {
+                        allFullRandomTasks.push({ url, target: 'man' });
+                    });
+                }
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
             }
             const resWoman = await fetch(lvl.files[1]);
             if (resWoman.ok) {
                 const data = await resWoman.json();
-                data.forEach(url => {
-                    allFullRandomTasks.push({ url, target: 'woman' });
-                    if (lvl.noTimer) noTimerUrls.add(url);
-                });
+                if (lvl.id === '11') {
+                    fullRandomOrgasmData.woman.push(...data);
+                } else {
+                    data.forEach(url => {
+                        allFullRandomTasks.push({ url, target: 'woman' });
+                    });
+                }
+                if (lvl.noTimer) data.forEach(url => noTimerUrls.add(url));
             }
           }
         });
 
         await Promise.all(fetchPromises);
-        totalTasks = allFullRandomTasks.length;
-        
-        updateWheelUI('full_random');
+
+        if (randomSubmode === 'orgasm') {
+            totalTasks = fullRandomOrgasmData.man.length + fullRandomOrgasmData.woman.length;
+            fullRandomOrgasmTurn = 'man';
+            updateWheelUI('man');
+        } else {
+            totalTasks = allFullRandomTasks.length;
+            updateWheelUI('full_random');
+        }
+
         updateCounter();
         elements.gifWrapper.innerHTML = `<div class="message">Задания загружены!<br>Крутите колесо.</div>`;
         checkGameStatus();
@@ -1081,15 +1090,33 @@
           
           advanceTurnRandom();
       } else if (gameMode === 'full_random') {
-          availableTasks = allFullRandomTasks.filter(t => !usedTasks.includes(t.url));
-          if (availableTasks.length === 0) return null;
-          
-          const taskObj = availableTasks[Math.floor(Math.random() * availableTasks.length)];
-          selectedTask = taskObj.url;
-          currentTarget = taskObj.target;
-          
-          usedTasks.push(selectedTask);
-          currentTask = selectedTask;
+          if (randomSubmode === 'orgasm') {
+              // Жесткая очередность для Orgazm в Full Random (man -> woman)
+              let currentGenderPool = fullRandomOrgasmData[fullRandomOrgasmTurn].filter(t => !usedTasks.includes(t));
+              if (currentGenderPool.length === 0) {
+                  fullRandomOrgasmTurn = fullRandomOrgasmTurn === 'man' ? 'woman' : 'man';
+                  currentGenderPool = fullRandomOrgasmData[fullRandomOrgasmTurn].filter(t => !usedTasks.includes(t));
+              }
+              if (currentGenderPool.length === 0) return null;
+
+              selectedTask = currentGenderPool[Math.floor(Math.random() * currentGenderPool.length)];
+              usedTasks.push(selectedTask);
+              currentTask = selectedTask;
+              currentTarget = fullRandomOrgasmTurn;
+
+              // Переключаем очередь для следующего раза
+              fullRandomOrgasmTurn = fullRandomOrgasmTurn === 'man' ? 'woman' : 'man';
+          } else {
+              availableTasks = allFullRandomTasks.filter(t => !usedTasks.includes(t.url));
+              if (availableTasks.length === 0) return null;
+              
+              const taskObj = availableTasks[Math.floor(Math.random() * availableTasks.length)];
+              selectedTask = taskObj.url;
+              currentTarget = taskObj.target;
+              
+              usedTasks.push(selectedTask);
+              currentTask = selectedTask;
+          }
       }
       
       updateCounter();
@@ -1163,16 +1190,22 @@
         
         if (gameMode === 'full_random') {
             if (taskUrl) {
-                elements.targetLabel.classList.add('visible');
-                if (currentTarget === 'man') {
-                    elements.targetLabel.textContent = 'Для него';
-                    elements.targetLabel.style.background = 'var(--wheel-man)';
-                } else if (currentTarget === 'woman') {
-                    elements.targetLabel.textContent = 'Для нее';
-                    elements.targetLabel.style.background = 'var(--wheel-woman)';
+                if (randomSubmode === 'orgasm') {
+                    // Для режима Orgazm в Full Random показываем иконку текущего пола (как в классике)
+                    elements.targetLabel.classList.remove('visible');
+                    updateWheelUI(currentTarget);
                 } else {
-                    elements.targetLabel.textContent = 'Для двоих';
-                    elements.targetLabel.style.background = 'var(--wheel-mutual)';
+                    elements.targetLabel.classList.add('visible');
+                    if (currentTarget === 'man') {
+                        elements.targetLabel.textContent = 'Для него';
+                        elements.targetLabel.style.background = 'var(--wheel-man)';
+                    } else if (currentTarget === 'woman') {
+                        elements.targetLabel.textContent = 'Для нее';
+                        elements.targetLabel.style.background = 'var(--wheel-woman)';
+                    } else {
+                        elements.targetLabel.textContent = 'Для двоих';
+                        elements.targetLabel.style.background = 'var(--wheel-mutual)';
+                    }
                 }
             }
         } else {
@@ -1232,7 +1265,13 @@
             else if (randomModeData.mutual.includes(skippedTask)) currentTurnType = 'mutual';
             updateWheelUI(currentTurnType);
         } else if (gameMode === 'full_random') {
-            elements.targetLabel.classList.remove('visible');
+            if (randomSubmode === 'orgasm') {
+                if (fullRandomOrgasmData.man.includes(skippedTask)) fullRandomOrgasmTurn = 'man';
+                else if (fullRandomOrgasmData.woman.includes(skippedTask)) fullRandomOrgasmTurn = 'woman';
+                updateWheelUI(fullRandomOrgasmTurn);
+            } else {
+                elements.targetLabel.classList.remove('visible');
+            }
         }
 
         updateCounter();
