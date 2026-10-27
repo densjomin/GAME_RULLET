@@ -715,9 +715,11 @@
       stopTimer();
       isGameStarted = false;
       
+      // Сброс прогресса классического режима и настроек таймера в дефолт (включен)
       currentLevelIndex = 0;
       currentLevel = LEVELS[0];
       usedTasks = [];
+      timerToggle.checked = true;
       
       gameScreen.style.display = 'none';
       modeScreen.style.display = 'flex';
@@ -732,6 +734,7 @@
       
       currentLevelIndex = 0;
       currentLevel = LEVELS[0];
+      timerToggle.checked = true; // Сброс таймера в дефолт при старте
       
       startGameUI();
       loadCurrentLevel();
@@ -743,6 +746,7 @@
       submodesRow.style.display = 'flex';
       elements.levelTitle.style.display = 'none';
       elements.nextLevelBtn.style.display = 'none';
+      timerToggle.checked = true; // Сброс таймера в дефолт при старте
       updateSubmodeButtonsUI();
       startGameUI();
       loadRandomGame();
@@ -754,6 +758,7 @@
       submodesRow.style.display = 'flex';
       elements.levelTitle.style.display = 'none';
       elements.nextLevelBtn.style.display = 'none';
+      timerToggle.checked = true; // Сброс таймера в дефолт при старте
       updateSubmodeButtonsUI();
       startGameUI();
       loadFullRandomGame();
@@ -830,7 +835,6 @@
     }
 
     function startTimer(taskUrl) {
-        // Если тумблер таймера выключен, ничего не запускаем
         if (!timerToggle.checked) {
             elements.timerDisplay.textContent = '';
             return;
@@ -867,7 +871,6 @@
         elements.timerDisplay.textContent = `${m}:${s}`;
     }
 
-    // Обработка переключения чекбокса таймера на лету
     timerToggle.addEventListener('change', () => {
         if (!timerToggle.checked) {
             stopTimer();
