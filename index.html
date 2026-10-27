@@ -566,7 +566,6 @@
 
       <div class="wheel-section">
         <div class="left-controls">
-            <!-- Плашка для Полного Рандома (когда нет жесткой очереди) -->
             <div id="targetLabel" class="target-label">Для него</div>
 
             <div class="task-counter" id="taskCounter">
@@ -1091,7 +1090,6 @@
           advanceTurnRandom();
       } else if (gameMode === 'full_random') {
           if (randomSubmode === 'orgasm') {
-              // Жесткая очередность для Orgazm в Full Random (man -> woman)
               let currentGenderPool = fullRandomOrgasmData[fullRandomOrgasmTurn].filter(t => !usedTasks.includes(t));
               if (currentGenderPool.length === 0) {
                   fullRandomOrgasmTurn = fullRandomOrgasmTurn === 'man' ? 'woman' : 'man';
@@ -1104,7 +1102,7 @@
               currentTask = selectedTask;
               currentTarget = fullRandomOrgasmTurn;
 
-              // Переключаем очередь для следующего раза
+              // Переключаем очередность для отображения и следующего спина
               fullRandomOrgasmTurn = fullRandomOrgasmTurn === 'man' ? 'woman' : 'man';
           } else {
               availableTasks = allFullRandomTasks.filter(t => !usedTasks.includes(t.url));
@@ -1191,9 +1189,9 @@
         if (gameMode === 'full_random') {
             if (taskUrl) {
                 if (randomSubmode === 'orgasm') {
-                    // Для режима Orgazm в Full Random показываем иконку текущего пола (как в классике)
                     elements.targetLabel.classList.remove('visible');
-                    updateWheelUI(currentTarget);
+                    // Сразу обновляем иконку колеса на следующего игрока в очереди
+                    updateWheelUI(fullRandomOrgasmTurn);
                 } else {
                     elements.targetLabel.classList.add('visible');
                     if (currentTarget === 'man') {
