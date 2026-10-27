@@ -548,7 +548,7 @@
 
     <div class="controls-wrapper">
       
-      <!-- Блок из трех независимых кнопок сверху (только для режима случайных заданий) -->
+      <!-- Блок из трех независимых кнопок сверху (для режимов Случайные задания и Полный рандом) -->
       <div id="randomSubmodesContainer" class="random-submodes-container" style="display: none;">
         <div class="submodes-row">
           <button class="submode-btn active" id="submodeNoSexBtn">Случайные задания<br>no sex/no orgazm</button>
@@ -700,7 +700,7 @@
       randomSubmode = 'nosex_noorgasm';
       randomSubmodesContainer.style.display = 'flex';
       
-      // Меняем плашку на кнопку «В меню» только для случайных заданий
+      // Меняем плашку на кнопку «В меню»
       headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
       document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
 
@@ -711,12 +711,14 @@
 
     fullRandomModeBtn.addEventListener('click', () => {
       gameMode = 'full_random';
-      randomSubmodesContainer.style.display = 'none';
+      randomSubmode = 'nosex_noorgasm';
+      randomSubmodesContainer.style.display = 'flex';
       
-      // Возвращаем плашку для полного рандома
-      headerLeftContainer.innerHTML = '<div class="level-title" id="levelTitle">Загрузка...</div>';
-      elements.levelTitle = document.getElementById('levelTitle');
+      // Меняем плашку на кнопку «В меню» также и для полного рандома
+      headerLeftContainer.innerHTML = '<button class="menu-btn" id="menuBtn">В меню</button>';
+      document.getElementById('menuBtn').addEventListener('click', goToModeSelection);
 
+      updateSubmodeButtonsUI();
       startGameUI();
       loadFullRandomGame();
     });
@@ -725,19 +727,22 @@
     submodeNoSexBtn.addEventListener('click', () => {
       randomSubmode = 'nosex_noorgasm';
       updateSubmodeButtonsUI();
-      loadRandomGame();
+      if (gameMode === 'random') loadRandomGame();
+      else if (gameMode === 'full_random') loadFullRandomGame();
     });
 
     submodeSexBtn.addEventListener('click', () => {
       randomSubmode = 'sex';
       updateSubmodeButtonsUI();
-      loadRandomGame();
+      if (gameMode === 'random') loadRandomGame();
+      else if (gameMode === 'full_random') loadFullRandomGame();
     });
 
     submodeOrgasmBtn.addEventListener('click', () => {
       randomSubmode = 'orgasm';
       updateSubmodeButtonsUI();
-      loadRandomGame();
+      if (gameMode === 'random') loadRandomGame();
+      else if (gameMode === 'full_random') loadFullRandomGame();
     });
 
     function updateSubmodeButtonsUI() {
@@ -854,12 +859,7 @@
           } else {
             elements.nextLevelBtn.textContent = 'Дальше (→)';
           }
-      } else if (gameMode === 'random') {
-          elements.nextLevelBtn.textContent = 'Закончить игру';
-      } else if (gameMode === 'full_random') {
-          if (elements.levelTitle) {
-              elements.levelTitle.textContent = 'Полный рандом';
-          }
+      } else if (gameMode === 'random' || gameMode === 'full_random') {
           elements.nextLevelBtn.textContent = 'Закончить игру';
       }
     }
@@ -964,7 +964,7 @@
       }
     }
 
-    // 3. FULL RANDOM MODE
+    // 3. FULL RANDOM MODE (С фильтрацией подрежимов)
     async function loadFullRandomGame() {
       stopTimer();
       elements.skipBtn.disabled = true;
@@ -974,8 +974,17 @@
       usedTasks = [];
       noTimerUrls = new Set();
       
+      let targetLevels = [];
+      if (randomSubmode === 'sex') {
+        targetLevels = LEVELS.filter(lvl => lvl.id === '10');
+      } else if (randomSubmode === 'orgasm') {
+        targetLevels = LEVELS.filter(lvl => lvl.id === '11');
+      } else {
+        targetLevels = LEVELS.filter(lvl => lvl.id !== '10' && lvl.id !== '11');
+      }
+      
       try {
-        const fetchPromises = LEVELS.map(async lvl => {
+        const fetchPromises = targetLevels.map(async lvl => {
           if (lvl.type === 'mutual') {
             const res = await fetch(lvl.file);
             if (res.ok) {
@@ -1010,7 +1019,7 @@
         
         updateWheelUI('full_random');
         updateCounter();
-        elements.gifWrapper.innerHTML = `<div class="message">Полный рандом активирован!<br>Крутите колесо.</div>`;
+        elements.gifWrapper.innerHTML = `<div class="message">Задания загружены!<br>Крутите колесо.</div>`;
         checkGameStatus();
         isDataLoaded = true;
       } catch (error) {
