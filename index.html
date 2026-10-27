@@ -683,6 +683,12 @@
     function goToModeSelection() {
       stopTimer();
       isGameStarted = false;
+      
+      // Сброс прогресса классического режима при выходе в меню
+      currentLevelIndex = 0;
+      currentLevel = LEVELS[0];
+      usedTasks = [];
+      
       gameScreen.style.display = 'none';
       modeScreen.style.display = 'flex';
     }
@@ -693,7 +699,11 @@
       gameMode = 'classic';
       submodesRow.style.display = 'none';
       elements.levelTitle.style.display = 'block';
-      elements.nextLevelBtn.style.display = 'block';
+      
+      // Гарантируем сброс на 1-й уровень
+      currentLevelIndex = 0;
+      currentLevel = LEVELS[0];
+      
       startGameUI();
       loadCurrentLevel();
     });
@@ -849,7 +859,15 @@
       
       if (gameMode === 'classic') {
           elements.levelTitle.textContent = currentLevel.name;
-          elements.nextLevelBtn.textContent = 'Дальше (→)';
+          // Если текущий уровень — последний (Оргазм), скрываем кнопку «Дальше»
+          if (currentLevelIndex >= LEVELS.length - 1) {
+            elements.nextLevelBtn.style.display = 'none';
+          } else {
+            elements.nextLevelBtn.style.display = 'block';
+            elements.nextLevelBtn.textContent = 'Дальше (→)';
+          }
+      } else {
+          elements.nextLevelBtn.style.display = 'none';
       }
     }
 
